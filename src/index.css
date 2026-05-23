@@ -1,0 +1,6 @@
+/* Reset and base styles live inside the <style> block in App.jsx */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
