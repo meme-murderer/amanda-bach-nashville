@@ -856,7 +856,7 @@ const ThursdayPage = () => (
     <DayMap
       kicker="The Map"
       title="East Nashville Crawl"
-      centerQuery="East Nashville, Nashville TN"
+      centerQuery="36.178,-86.748"
       stops={["hawkers", "attaboy", "lakeside", "hubba"]}
     />
   </div>
@@ -892,7 +892,7 @@ const FridayPage = () => (
       <TimeBlock time="11:30 AM" title="Line Dance Lessons"         description="Category 10. Free class, runs ~11:30 to 1:30. Warm up for tonight." venue="cat10" />
       <TimeBlock time="1:50 PM"  title="Arrive at Pedal Tavern"     description="$72 pp (gratuity included). Tour departs 2:20 PM, be there by 1:50." highlight venue="pedal" />
       <TimeBlock time="4:15 PM"  title="Early Dinner"               description="The Hampton Social Rooftop. Reservation at 4:15." venue="hampton" />
-      <TimeBlock time="4:00 PM+" title="Jandee & Niraj Check Into Mint House" description="Their unit's check-in opens at 4. Same building as Jess's group, 808 14th Ave N." venue="airbnb" />
+      <TimeBlock time="4:00 PM+" title="Jandee & Niraj Check Into Mint House" venue="airbnb" />
       <TimeBlock time="Evening"  title="Drop Car & Freshen Up"      description="Back to Mint House, change clothes, regroup for Broadway." />
       <TimeBlock time="Night"    title="Broadway Night Out"         description="The main event. Honky-tonks all the way down Lower Broadway." />
     </div>
@@ -906,68 +906,223 @@ const FridayPage = () => (
     <DayMap
       kicker="The Map"
       title="Downtown & Broadway"
-      centerQuery="Lower Broadway, Nashville TN"
+      centerQuery="36.1607,-86.7782"
       stops={["bacco", "cat10", "pedal", "hampton", "tootsies", "roberts"]}
     />
   </div>
 );
 
-const SaturdayPage = () => (
-  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.sat) }}>
-    <PageHeader kicker="Day Three" title="Saturday" subtitle="May 30 · Chill & Adventure" />
+const SaturdayPage = () => {
+  const [parkMapOpen, setParkMapOpen] = useState(false);
+  const PARK_MAP_URL = "https://tnstateparks.com/sites/default/files/2026-02/FallCreekFalls_small_map.jpg";
 
-    <div style={{ padding: "0 0 24px" }}>
-      <TimeBlock time="Morning"   title="Sleep In"                  description="Recovery mode. Take it easy." />
-      <TimeBlock time="Late AM"   title="Breakfast at the Airbnb"   description="Jess is on breakfast duty. Refuel before the hike." highlight />
-      <TimeBlock
-        time="Afternoon"
-        title="Hike & Waterfall Swim"
-        description="Fall Creek Falls State Park. Bring swimsuits, towels, water, sunscreen, and hiking shoes."
-        highlight
-        venue="fallCreek"
-        link="https://tnstateparks.com/parks/fall-creek-falls"
-        linkText="Park info"
-      />
-      <TimeBlock time="Late PM"   title="Late Lunch"                description="Kyuramen. Takeout option available if we're worn out." venue="kyuramen" />
-      <TimeBlock time="Evening"   title="Steak Dinner at the Airbnb" description="Grill steaks & veggies. Home-cooked group dinner." />
-      <TimeBlock time="Night"     title="Pool Party & Game Night"   description="Close out the night poolside. Bring games." highlight />
-    </div>
+  return (
+    <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.sat) }}>
+      <PageHeader kicker="Day Three" title="Saturday" subtitle="May 30 · Chill & Adventure" />
 
-    <InfoCard kicker="Don't Forget" title="Packing Reminder">
-      <p style={{
-        fontFamily: FONTS.body,
-        fontSize: 13,
-        color: COLORS.textLight,
-        margin: "0 0 12px",
-        lineHeight: 1.6,
-      }}>
-        Bring your own:
-      </p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 14 }}>
-        {["Hiking shoes", "Swimsuit", "Water bottle"].map((item, i) => (
-          <DresscodeTag key={i} label={item} color={COLORS.sageDark} />
-        ))}
+      <div style={{ padding: "0 0 24px" }}>
+        <TimeBlock time="Morning"   title="Sleep In"                  description="Recovery mode. Take it easy." />
+        <TimeBlock time="Late AM"   title="Breakfast at the Airbnb"   description="Jess is on breakfast duty. Refuel before the hike." highlight />
+        <TimeBlock
+          time="Afternoon"
+          title="Hike & Waterfall Swim"
+          description="Fall Creek Falls State Park. Bring swimsuits, water, hiking shoes. Jandee has the towels, bug spray, and sunscreen covered."
+          highlight
+          venue="fallCreek"
+        />
+        <TimeBlock time="Late PM"   title="Late Lunch"                description="Kyuramen. Takeout option available if we're worn out." venue="kyuramen" />
+        <TimeBlock time="Evening"   title="Steak Dinner at the Airbnb" description="Grill steaks & veggies. Home-cooked group dinner." />
+        <TimeBlock time="Night"     title="Pool Party & Game Night"   description="Close out the night poolside. Bring games." highlight />
       </div>
-      <p style={{
-        fontFamily: FONTS.accent,
-        fontSize: 14,
-        color: COLORS.cognacDark,
-        margin: 0,
-        fontStyle: "italic",
-        letterSpacing: "0.3px",
-      }}>
-        Jandee is bringing towels, bug spray, and sunscreen for the group.
-      </p>
-    </InfoCard>
 
-    <DayMap
-      kicker="The Map"
-      title="Out to the Falls"
-      centerQuery="Fall Creek Falls State Park, Tennessee"
-      stops={["fallCreek", "kyuramen"]}
-    />
-  </div>
-);
+      <InfoCard kicker="The Adventure" title="Fall Creek Falls">
+        <p style={{
+          fontFamily: FONTS.body,
+          fontSize: 13,
+          color: COLORS.textLight,
+          margin: "0 0 14px",
+          lineHeight: 1.6,
+        }}>
+          Tennessee's tallest waterfall at <strong>256 feet</strong>. About <strong>2 hours east of Nashville</strong>, deep in the Cumberland Plateau. We're driving in, hiking down to the base, and swimming in the pool.
+        </p>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "auto 1fr",
+          gap: "10px 14px",
+          margin: "0 0 16px",
+        }}>
+          <span style={{ fontFamily: FONTS.body, fontSize: 9, fontWeight: 700, color: COLORS.sageDark, letterSpacing: "1.5px", textTransform: "uppercase" }}>Park</span>
+          <span style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.textLight }}>Fall Creek Falls Overlook lot, off the Scenic Loop Road. Restrooms on site.</span>
+
+          <span style={{ fontFamily: FONTS.body, fontSize: 9, fontWeight: 700, color: COLORS.sageDark, letterSpacing: "1.5px", textTransform: "uppercase" }}>Trail</span>
+          <span style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.textLight }}>Base of the Falls Trail. <strong>0.8 mi round trip</strong>, descends ~290 ft into the gorge then back up.</span>
+
+          <span style={{ fontFamily: FONTS.body, fontSize: 9, fontWeight: 700, color: COLORS.sageDark, letterSpacing: "1.5px", textTransform: "uppercase" }}>Time</span>
+          <span style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.textLight }}>~1 hour for the hike. Plan 4-5 hours round trip from Nashville with the drive and swim.</span>
+
+          <span style={{ fontFamily: FONTS.body, fontSize: 9, fontWeight: 700, color: COLORS.sageDark, letterSpacing: "1.5px", textTransform: "uppercase" }}>Difficulty</span>
+          <span style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.textLight }}>Short but <strong>steep</strong>. Rocks at the base get slippery from the spray. Sturdy shoes, take your time on the climb back.</span>
+        </div>
+
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button
+            type="button"
+            onClick={() => setParkMapOpen(true)}
+            style={{
+              padding: "11px 20px",
+              background: COLORS.sageDark,
+              color: COLORS.white,
+              fontFamily: FONTS.body,
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: "1.8px",
+              textTransform: "uppercase",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            View Park Map
+          </button>
+          <a
+            href="https://tnstateparks.com/parks/fall-creek-falls"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              padding: "11px 20px",
+              background: "transparent",
+              color: COLORS.sageDark,
+              border: `1px solid ${COLORS.sageDark}`,
+              fontFamily: FONTS.body,
+              fontSize: 10,
+              fontWeight: 700,
+              textDecoration: "none",
+              letterSpacing: "1.8px",
+              textTransform: "uppercase",
+            }}
+          >
+            Park Website
+          </a>
+        </div>
+      </InfoCard>
+
+      <InfoCard kicker="Don't Forget" title="Packing Reminder">
+        <p style={{
+          fontFamily: FONTS.body,
+          fontSize: 13,
+          color: COLORS.textLight,
+          margin: "0 0 12px",
+          lineHeight: 1.6,
+        }}>
+          Bring your own:
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 14 }}>
+          {["Hiking shoes", "Swimsuit", "Water bottle"].map((item, i) => (
+            <DresscodeTag key={i} label={item} color={COLORS.sageDark} />
+          ))}
+        </div>
+        <p style={{
+          fontFamily: FONTS.accent,
+          fontSize: 14,
+          color: COLORS.cognacDark,
+          margin: 0,
+          fontStyle: "italic",
+          letterSpacing: "0.3px",
+        }}>
+          Jandee is bringing towels, bug spray, and sunscreen for the group.
+        </p>
+      </InfoCard>
+
+      <DayMap
+        kicker="The Map"
+        title="Out to the Falls"
+        centerQuery="35.6606,-85.3461"
+        stops={["fallCreek", "kyuramen"]}
+      />
+
+      {/* Park map lightbox */}
+      {parkMapOpen && (
+        <div
+          onClick={() => setParkMapOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Fall Creek Falls park map"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(28,22,18,0.92)",
+            zIndex: 200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+            cursor: "zoom-out",
+            animation: "fadeIn 0.18s ease-out",
+          }}
+        >
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setParkMapOpen(false); }}
+            aria-label="Close map"
+            style={{
+              position: "absolute",
+              top: "calc(env(safe-area-inset-top, 0px) + 16px)",
+              right: 16,
+              width: 40,
+              height: 40,
+              background: "rgba(255,255,255,0.12)",
+              color: COLORS.white,
+              border: `1px solid rgba(255,255,255,0.3)`,
+              borderRadius: "50%",
+              fontSize: 22,
+              fontFamily: FONTS.body,
+              cursor: "pointer",
+              lineHeight: 1,
+            }}
+          >
+            ×
+          </button>
+          <img
+            src={PARK_MAP_URL}
+            alt="Fall Creek Falls State Park map"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "85vh",
+              objectFit: "contain",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+              cursor: "default",
+            }}
+          />
+          <a
+            href={PARK_MAP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "absolute",
+              bottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
+              left: "50%",
+              transform: "translateX(-50%)",
+              padding: "9px 18px",
+              background: "rgba(255,255,255,0.92)",
+              color: COLORS.cognacDark,
+              fontFamily: FONTS.body,
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: "1.8px",
+              textTransform: "uppercase",
+              textDecoration: "none",
+            }}
+          >
+            Open Full Size
+          </a>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const SundayPage = () => (
   <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.sun) }}>
@@ -976,7 +1131,7 @@ const SundayPage = () => (
     <div style={{ padding: "0 0 24px" }}>
       <TimeBlock time="7:00 AM"  title="Burlyn Departs"            description="Early flight out of BNA." venue="bna" />
       <TimeBlock time="11:00 AM" title="Check Out of Mint House" description="Both units out by 11. Pack up, tidy up." highlight venue="airbnb" />
-      <TimeBlock time="After Checkout" title="Road Trip to Memphis" description="Amanda, Jess, and Ella are driving back to Memphis with Niraj and Jandee. One car, the whole crew, ~3 hours west on I-40." highlight />
+      <TimeBlock time="After Checkout" title="Road Trip to Memphis" description="Amanda, Jess, and Ella are driving back to Memphis with Niraj and Jandee. One car, big crew, ~3 hours west on I-40." highlight />
       <TimeBlock time="5:43 PM"  title="Vanessa Departs"           description="Last flight out of BNA." venue="bna" />
     </div>
 
@@ -1054,16 +1209,7 @@ const DetailsPage = () => (
         >
           808 14th Ave N, Nashville, TN 37203 →
         </a>
-        <p style={{
-          fontFamily: FONTS.body,
-          fontSize: 12,
-          color: COLORS.textMuted,
-          margin: "10px 0 18px",
-          fontStyle: "italic",
-          letterSpacing: "0.2px",
-        }}>
-          Two units in the same building. The women in Jess's, the boys in Jandee's.
-        </p>
+        <div style={{ height: 18 }} />
 
         {/* Unit 1, Jess's Airbnb */}
         <div style={{
@@ -1081,7 +1227,7 @@ const DetailsPage = () => (
             margin: "0 0 8px",
             fontStyle: "italic",
           }}>
-            The Women's Unit
+            The Bridal Suite
           </h4>
           <p style={{
             fontFamily: FONTS.body,
@@ -1090,15 +1236,7 @@ const DetailsPage = () => (
             margin: "0 0 4px",
             lineHeight: 1.6,
           }}>
-            <strong>Sleeps 5</strong> · Amanda, Jess, Ella, Vanessa, Burlyn
-          </p>
-          <p style={{
-            fontFamily: FONTS.body,
-            fontSize: 12,
-            color: COLORS.textLight,
-            margin: "0 0 4px",
-          }}>
-            <strong>$952</strong> total · $159 per person
+            <strong>Sleeps 6</strong> · Amanda, Jess, Ella, Vanessa, Burlyn
           </p>
           <p style={{
             fontFamily: FONTS.body,
@@ -1108,47 +1246,25 @@ const DetailsPage = () => (
           }}>
             Thu May 28 · 4:00 PM → Sun May 31 · 11:00 AM
           </p>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            <a
-              href="https://www.airbnb.com/rooms/1326215239593896193?viralityEntryPoint=1&s=76"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                padding: "8px 14px",
-                background: COLORS.cognacDark,
-                color: COLORS.white,
-                fontFamily: FONTS.body,
-                fontSize: 9,
-                fontWeight: 700,
-                textDecoration: "none",
-                letterSpacing: "1.5px",
-                textTransform: "uppercase",
-              }}
-            >
-              Primary Airbnb
-            </a>
-            <a
-              href="https://www.airbnb.com/rooms/51781831?viralityEntryPoint=1&s=76"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                padding: "8px 14px",
-                background: "transparent",
-                color: COLORS.cognacDark,
-                border: `1px solid ${COLORS.cognacDark}`,
-                fontFamily: FONTS.body,
-                fontSize: 9,
-                fontWeight: 700,
-                textDecoration: "none",
-                letterSpacing: "1.5px",
-                textTransform: "uppercase",
-              }}
-            >
-              Backup
-            </a>
-          </div>
+          <a
+            href="https://www.airbnb.com/rooms/1326215239593896193?viralityEntryPoint=1&s=76"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              padding: "8px 14px",
+              background: COLORS.cognacDark,
+              color: COLORS.white,
+              fontFamily: FONTS.body,
+              fontSize: 9,
+              fontWeight: 700,
+              textDecoration: "none",
+              letterSpacing: "1.5px",
+              textTransform: "uppercase",
+            }}
+          >
+            View Listing
+          </a>
         </div>
 
         {/* Unit 2, Jandee's Expedia booking */}
@@ -1166,7 +1282,7 @@ const DetailsPage = () => (
             margin: "0 0 8px",
             fontStyle: "italic",
           }}>
-            Deluxe One Bedroom
+            The Plus Ones
           </h4>
           <p style={{
             fontFamily: FONTS.body,
@@ -1175,7 +1291,7 @@ const DetailsPage = () => (
             margin: "0 0 4px",
             lineHeight: 1.6,
           }}>
-            <strong>Sleeps 2</strong> · Jandee & Niraj
+            <strong>Sleeps 4</strong> · Jandee & Niraj
           </p>
           <p style={{
             fontFamily: FONTS.body,
@@ -1215,7 +1331,7 @@ const DetailsPage = () => (
           margin: 0,
           lineHeight: 1.7,
         }}>
-          Alamo rental. <strong>$72 per person.</strong> Jess picking up on arrival Thursday.
+          Alamo rental. Jess picking up on arrival Thursday.
         </p>
       </InfoCard>
 
@@ -1235,92 +1351,10 @@ const DetailsPage = () => (
         <GuestRow name="Vanessa" info="Sun · 5:43 PM · Flight" />
         </InfoCard>
 
-      <InfoCard kicker="What It Costs" title="Cost Breakdown">
-        {[
-          { item: "Airbnb",        cost: "$159 pp" },
-          { item: "Rental Car",    cost: "$72 pp" },
-          { item: "Pedal Tavern",  cost: "$72 pp" },
-        ].map((row, i) => (
-          <div key={i} style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "14px 0",
-            borderBottom: `1px solid ${COLORS.hairline}`,
-          }}>
-            <span style={{
-              fontFamily: FONTS.display,
-              fontSize: 16,
-              color: COLORS.text,
-              fontStyle: "italic",
-              fontWeight: 400,
-            }}>
-              {row.item}
-            </span>
-            <span style={{
-              fontFamily: FONTS.body,
-              fontSize: 11,
-              fontWeight: 700,
-              color: COLORS.cognac,
-              letterSpacing: "1.5px",
-              textTransform: "uppercase",
-            }}>
-              {row.cost}
-            </span>
-          </div>
-        ))}
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-          padding: "20px 0 4px",
-        }}>
-          <span style={{
-            fontFamily: FONTS.body,
-            fontSize: 10,
-            color: COLORS.cognac,
-            fontWeight: 700,
-            letterSpacing: "2px",
-            textTransform: "uppercase",
-          }}>
-            Running total
-          </span>
-          <span style={{
-            fontFamily: FONTS.display,
-            fontSize: 22,
-            fontWeight: 400,
-            color: COLORS.cognacDark,
-            fontStyle: "italic",
-            letterSpacing: "-0.5px",
-          }}>
-            $303 pp
-          </span>
-        </div>
-        <p style={{
-          fontFamily: FONTS.accent,
-          fontSize: 13,
-          color: COLORS.textMuted,
-          margin: "8px 0 0",
-          fontStyle: "italic",
-          letterSpacing: "0.3px",
-        }}>
-          Per person, for the five women in Jess's unit. Jandee & Niraj's Mint House unit is booked separately. Food, drinks, and Ubers not included.
-        </p>
-      </InfoCard>
-
       <InfoCard kicker="From Jess" title="Coordinating">
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
 
           <div>
-            <Kicker mb={6} size={9}>Pay Jess Back · $303</Kicker>
-            <p style={{
-              fontFamily: FONTS.body,
-              fontSize: 13,
-              color: COLORS.textLight,
-              margin: "0 0 10px",
-              lineHeight: 1.6,
-            }}>
-              Venmo for the Airbnb, rental car, and Pedal Tavern. The $303 fixed costs.
-            </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               <a
                 href="https://venmo.com/?txn=pay&recipients=Jessica-Meyers16&note=Nashville%20Bach"
@@ -1362,16 +1396,6 @@ const DetailsPage = () => (
                 Her Profile
               </a>
             </div>
-            <p style={{
-              fontFamily: FONTS.accent,
-              fontSize: 12,
-              color: COLORS.textMuted,
-              margin: "8px 0 0",
-              fontStyle: "italic",
-              letterSpacing: "0.3px",
-            }}>
-              Opens Venmo with Jess and "Nashville Bach" pre-filled. Just enter your amount.
-            </p>
           </div>
 
           <div>
@@ -1428,44 +1452,129 @@ const DetailsPage = () => (
             </div>
           </div>
 
-          <div>
-            <Kicker mb={6} size={9}>Flights</Kicker>
-            <p style={{
-              fontFamily: FONTS.body,
-              fontSize: 13,
-              color: COLORS.textLight,
-              margin: 0,
-              lineHeight: 1.6,
-            }}>
-              Text Jess your flight info once you book. She's coordinating pickups and drop-offs in the rental car to save us all on Ubers.
-            </p>
-          </div>
-
-          <div>
-            <Kicker mb={6} size={9}>Restaurant Recs</Kicker>
-            <p style={{
-              fontFamily: FONTS.body,
-              fontSize: 13,
-              color: COLORS.textLight,
-              margin: 0,
-              lineHeight: 1.6,
-            }}>
-              Reservations get locked in about a month out. If there's somewhere you're dying to go, send it to Jess now.
-            </p>
-          </div>
-
         </div>
       </InfoCard>
 
-      <DayMap
-        kicker="The Whole Trip"
-        title="Nashville Overview"
-        centerQuery="Nashville, Tennessee"
-        stops={["bna", "hawkers", "tootsies", "fallCreek"]}
-      />
+      <AllStops />
     </div>
   </div>
 );
+
+// Grouped "all stops" view replacing the multi-pin overview map.
+// Each venue is a tappable chip that opens it directly in Maps.
+const AllStops = () => {
+  const sections = [
+    {
+      label: "Home Base",
+      keys: ["airbnb"],
+    },
+    {
+      label: "Thursday · East Nashville",
+      keys: ["hawkers", "attaboy", "lakeside", "hubba"],
+    },
+    {
+      label: "Friday · Downtown & Broadway",
+      keys: ["bacco", "cat10", "pedal", "hampton", "tootsies", "roberts"],
+    },
+    {
+      label: "Saturday · Out East",
+      keys: ["fallCreek", "kyuramen"],
+    },
+    {
+      label: "Sunday · Heading Home",
+      keys: ["bna", "memphis"],
+    },
+  ];
+
+  return (
+    <div style={{ padding: "24px 16px 0" }}>
+      <Kicker mb={6}>The Whole Trip</Kicker>
+      <h3 style={{
+        fontFamily: FONTS.display,
+        fontSize: 22,
+        fontWeight: 400,
+        color: COLORS.text,
+        margin: "0 0 14px",
+        fontStyle: "italic",
+        letterSpacing: "-0.4px",
+      }}>
+        Every Stop
+      </h3>
+
+      {/* Nashville-area map for geographic context */}
+      <div style={{
+        border: `1px solid ${COLORS.hairline}`,
+        overflow: "hidden",
+        marginBottom: 16,
+      }}>
+        <iframe
+          src={mapsEmbedUrl("36.165,-86.78")}
+          width="100%"
+          height="200"
+          style={{ border: 0, display: "block" }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Nashville map"
+        />
+      </div>
+
+      {/* All venues grouped by day */}
+      {sections.map((section) => (
+        <div key={section.label} style={{ marginBottom: 16 }}>
+          <Kicker mb={8} size={9}>{section.label}</Kicker>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {section.keys.map((k) => {
+              const v = VENUES[k];
+              if (!v) return null;
+              return (
+                <a
+                  key={k}
+                  href={mapsSearchUrl(v.q)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "7px 12px",
+                    background: COLORS.white,
+                    border: `1px solid ${COLORS.hairline}`,
+                    fontFamily: FONTS.body,
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: COLORS.text,
+                    textDecoration: "none",
+                    letterSpacing: "0.2px",
+                  }}
+                >
+                  <span style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: COLORS.cognac,
+                    flexShrink: 0,
+                  }} />
+                  {v.name}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      <p style={{
+        fontFamily: FONTS.accent,
+        fontSize: 13,
+        color: COLORS.textMuted,
+        margin: "12px 0 0",
+        fontStyle: "italic",
+        letterSpacing: "0.3px",
+      }}>
+        Tap any stop to open it in your Maps app.
+      </p>
+    </div>
+  );
+};
 
 // ============== APP ==============
 
