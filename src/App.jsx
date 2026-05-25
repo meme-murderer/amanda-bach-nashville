@@ -1,20 +1,26 @@
 import { useState, useEffect } from "react";
 
+// Palette tuned to Amanda's mood board: blush peony, sage green, cognac,
+// champagne ivory. Keep it upscale, not costumey.
 const COLORS = {
-  blush: "#D4A5A8",
-  blushLight: "#EBD0D2",
-  blushPale: "#F9EFEF",
-  sage: "#9EAD8B",
-  sageDark: "#6E7E5E",
-  sagePale: "#EEF2E8",
-  cognac: "#8B5E3C",
-  cognacDark: "#6B4828",
+  blush: "#C68F92",          // deeper peony — primary "bloom"
+  blushSoft: "#D9A8AB",
+  blushLight: "#E8CACC",
+  blushPale: "#F8ECEC",
+  sage: "#9CAB87",           // botanical accent (eucalyptus / peony stems)
+  sageDark: "#5F6E50",
+  sageLight: "#C5D1B4",
+  sagePale: "#EDF1E6",
+  cognac: "#8B5E3C",         // saddle leather
+  cognacDark: "#5C3D24",
   sand: "#C4A882",
   sandLight: "#E0D4BD",
-  champagne: "#F5F0E6",
-  ivory: "#FBF8F2",
+  champagne: "#F0E6D2",      // warmer champagne
+  champagnePale: "#FAF3E2",
+  ivory: "#FBF6EC",          // bridal base
   cream: "#F8F3EB",
   gold: "#B89968",
+  goldLight: "#D4BD8A",
   text: "#2D2520",
   textLight: "#5C4F45",
   textMuted: "#A89A8E",
@@ -26,7 +32,25 @@ const FONTS = {
   display: "'Playfair Display', Georgia, serif",
   body: "'DM Sans', 'Avenir', sans-serif",
   accent: "'Cormorant Garamond', Georgia, serif",
+  script: "'Allura', cursive",
 };
+
+// Each day gets its own subtle accent. The accent color is exposed as a
+// CSS variable so child components (TimeBlock, PageHeader) pick it up
+// without prop drilling.
+const THEMES = {
+  thu: { hl: COLORS.champagnePale, edge: COLORS.sandLight,  kicker: COLORS.cognac    },
+  fri: { hl: COLORS.blushPale,     edge: COLORS.blushLight, kicker: COLORS.blush     },
+  sat: { hl: COLORS.sagePale,      edge: COLORS.sageLight,  kicker: COLORS.sageDark  },
+  sun: { hl: COLORS.champagnePale, edge: COLORS.sandLight,  kicker: COLORS.cognac    },
+  det: { hl: COLORS.blushPale,     edge: COLORS.blushLight, kicker: COLORS.cognac    },
+};
+
+const themeVars = (t) => ({
+  "--hl-bg":     t.hl,
+  "--hl-edge":   t.edge,
+  "--hl-kicker": t.kicker,
+});
 
 // ============== ATOMS ==============
 
@@ -39,12 +63,12 @@ const Hairline = ({ color = COLORS.hairline, margin = "20px auto", width = 40 })
   }} />
 );
 
-const Kicker = ({ children, color = COLORS.cognac, size = 10, mb = 8 }) => (
+const Kicker = ({ children, color, size = 10, mb = 8, useTheme = false }) => (
   <p style={{
     fontFamily: FONTS.body,
     fontSize: size,
     fontWeight: 600,
-    color,
+    color: color || (useTheme ? "var(--hl-kicker, " + COLORS.cognac + ")" : COLORS.cognac),
     letterSpacing: "3.5px",
     textTransform: "uppercase",
     margin: `0 0 ${mb}px`,
@@ -289,32 +313,33 @@ const BottomNav = ({ active, onNavigate }) => (
 const PageHeader = ({ title, subtitle, kicker }) => (
   <div style={{
     textAlign: "center",
-    padding: "56px 24px 36px",
-    background: COLORS.ivory,
+    padding: "56px 24px 40px",
+    background: "linear-gradient(180deg, var(--hl-bg, " + COLORS.champagnePale + ") 0%, " + COLORS.ivory + " 100%)",
+    position: "relative",
   }}>
-    {kicker && <Kicker mb={14}>{kicker}</Kicker>}
+    {kicker && <Kicker mb={14} useTheme>{kicker}</Kicker>}
     <h2 style={{
       fontFamily: FONTS.display,
-      fontSize: 44,
+      fontSize: 46,
       color: COLORS.text,
       margin: 0,
       fontWeight: 400,
       fontStyle: "italic",
-      letterSpacing: "-1.2px",
+      letterSpacing: "-1.4px",
       lineHeight: 1.05,
     }}>
       {title}
     </h2>
     {subtitle && (
       <>
-        <Hairline color={COLORS.sandLight} margin="22px auto 18px" width={36} />
+        <Hairline color={"var(--hl-edge, " + COLORS.sandLight + ")"} margin="24px auto 18px" width={40} />
         <p style={{
           fontFamily: FONTS.accent,
-          fontSize: 16,
+          fontSize: 17,
           color: COLORS.textLight,
           margin: 0,
           fontStyle: "italic",
-          letterSpacing: "0.5px",
+          letterSpacing: "0.6px",
         }}>
           {subtitle}
         </p>
@@ -329,14 +354,15 @@ const TimeBlock = ({ time, title, description, highlight, link, linkText, venue 
     gap: 18,
     padding: "20px 24px",
     borderBottom: `1px solid ${COLORS.hairline}`,
-    background: highlight ? COLORS.blushPale : "transparent",
+    background: highlight ? "var(--hl-bg, " + COLORS.blushPale + ")" : "transparent",
+    borderLeft: highlight ? `3px solid var(--hl-edge, ${COLORS.blushLight})` : "3px solid transparent",
   }}>
     <div style={{ minWidth: 66, textAlign: "right", paddingTop: 5 }}>
       <span style={{
         fontFamily: FONTS.body,
         fontSize: 10,
         fontWeight: 700,
-        color: COLORS.cognac,
+        color: highlight ? "var(--hl-kicker, " + COLORS.cognac + ")" : COLORS.cognac,
         letterSpacing: "1.5px",
         textTransform: "uppercase",
       }}>
@@ -529,7 +555,7 @@ const HomePage = () => {
           fontSize: 56,
           fontWeight: 400,
           color: COLORS.text,
-          margin: "0 0 8px",
+          margin: "0 0 4px",
           lineHeight: 1,
           fontStyle: "italic",
           letterSpacing: "-2px",
@@ -537,13 +563,12 @@ const HomePage = () => {
           Saddlin' Up
         </h1>
         <p style={{
-          fontFamily: FONTS.accent,
-          fontSize: 32,
-          color: COLORS.cognac,
-          margin: "4px 0",
-          letterSpacing: "2px",
-          fontStyle: "italic",
-          fontWeight: 300,
+          fontFamily: FONTS.script,
+          fontSize: 64,
+          color: COLORS.blush,
+          margin: "-6px 0 -14px",
+          lineHeight: 1,
+          fontWeight: 400,
         }}>
           &
         </p>
@@ -552,7 +577,7 @@ const HomePage = () => {
           fontSize: 56,
           fontWeight: 400,
           color: COLORS.text,
-          margin: "8px 0 0",
+          margin: "4px 0 0",
           lineHeight: 1,
           fontStyle: "italic",
           letterSpacing: "-2px",
@@ -716,7 +741,7 @@ const HomePage = () => {
 };
 
 const ThursdayPage = () => (
-  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100 }}>
+  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.thu) }}>
     <PageHeader kicker="Day One" title="Thursday" subtitle="May 28 · Arrival Day" />
 
     <div style={{ padding: "0 0 24px" }}>
@@ -767,7 +792,7 @@ const ThursdayPage = () => (
 );
 
 const FridayPage = () => (
-  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100 }}>
+  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.fri) }}>
     <PageHeader kicker="Day Two" title="Friday" subtitle="May 29 · The Big Day Out" />
 
     <InfoCard kicker="What To Wear" title="Dress Code">
@@ -816,7 +841,7 @@ const FridayPage = () => (
 );
 
 const SaturdayPage = () => (
-  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100 }}>
+  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.sat) }}>
     <PageHeader kicker="Day Three" title="Saturday" subtitle="May 30 · Chill & Adventure" />
 
     <div style={{ padding: "0 0 24px" }}>
@@ -854,7 +879,7 @@ const SaturdayPage = () => (
 );
 
 const SundayPage = () => (
-  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100 }}>
+  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.sun) }}>
     <PageHeader kicker="Day Four" title="Sunday" subtitle="May 31 · Adios, Nashville" />
 
     <div style={{ padding: "0 0 24px" }}>
@@ -907,7 +932,7 @@ const SundayPage = () => (
 );
 
 const DetailsPage = () => (
-  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100 }}>
+  <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.det) }}>
     <PageHeader kicker="The Logistics" title="Details" subtitle="Need-to-Know Info" />
 
     <div style={{ padding: "8px 0" }}>
@@ -1087,25 +1112,57 @@ const DetailsPage = () => (
             }}>
               Venmo for the Airbnb, rental car, and Pedal Tavern — the $303 fixed costs.
             </p>
-            <a
-              href="https://venmo.com/u/Jessica-Meyers16"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                padding: "10px 18px",
-                background: COLORS.cognacDark,
-                color: COLORS.white,
-                fontFamily: FONTS.body,
-                fontSize: 10,
-                fontWeight: 700,
-                textDecoration: "none",
-                letterSpacing: "1.8px",
-                textTransform: "uppercase",
-              }}
-            >
-              Venmo @Jessica-Meyers16
-            </a>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <a
+                href="https://venmo.com/?txn=pay&recipients=Jessica-Meyers16&note=Nashville%20Bach"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  padding: "11px 20px",
+                  background: COLORS.cognacDark,
+                  color: COLORS.white,
+                  fontFamily: FONTS.body,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  letterSpacing: "1.8px",
+                  textTransform: "uppercase",
+                }}
+              >
+                Pay Jess on Venmo
+              </a>
+              <a
+                href="https://venmo.com/u/Jessica-Meyers16"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  padding: "11px 20px",
+                  background: "transparent",
+                  color: COLORS.cognacDark,
+                  border: `1px solid ${COLORS.cognacDark}`,
+                  fontFamily: FONTS.body,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  letterSpacing: "1.8px",
+                  textTransform: "uppercase",
+                }}
+              >
+                Her Profile
+              </a>
+            </div>
+            <p style={{
+              fontFamily: FONTS.accent,
+              fontSize: 12,
+              color: COLORS.textMuted,
+              margin: "8px 0 0",
+              fontStyle: "italic",
+              letterSpacing: "0.3px",
+            }}>
+              Opens Venmo with Jess and "Nashville Bach" pre-filled — just enter your amount.
+            </p>
           </div>
 
           <div>
@@ -1119,26 +1176,47 @@ const DetailsPage = () => (
             }}>
               We're using <strong>Splitwise</strong> for the weekend — take turns paying for meals out, then settle up at the end of the trip.
             </p>
-            <a
-              href="https://www.splitwise.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                padding: "10px 18px",
-                background: "transparent",
-                color: COLORS.cognacDark,
-                border: `1px solid ${COLORS.cognacDark}`,
-                fontFamily: FONTS.body,
-                fontSize: 10,
-                fontWeight: 700,
-                textDecoration: "none",
-                letterSpacing: "1.8px",
-                textTransform: "uppercase",
-              }}
-            >
-              Get Splitwise
-            </a>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <a
+                href="https://www.splitwise.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  padding: "11px 20px",
+                  background: COLORS.sageDark,
+                  color: COLORS.white,
+                  fontFamily: FONTS.body,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  letterSpacing: "1.8px",
+                  textTransform: "uppercase",
+                }}
+              >
+                Open Splitwise
+              </a>
+              <a
+                href="https://www.splitwise.com/download"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  padding: "11px 20px",
+                  background: "transparent",
+                  color: COLORS.sageDark,
+                  border: `1px solid ${COLORS.sageDark}`,
+                  fontFamily: FONTS.body,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  letterSpacing: "1.8px",
+                  textTransform: "uppercase",
+                }}
+              >
+                Get the App
+              </a>
+            </div>
           </div>
 
           <div>
@@ -1205,11 +1283,24 @@ export default function App() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Allura&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         html, body { background: ${COLORS.ivory}; overflow-x: hidden; }
-        body { font-family: ${FONTS.body}; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        body {
+          font-family: ${FONTS.body};
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          /* Subtle paper-grain so the ivory base has warmth and depth. */
+          background-color: ${COLORS.ivory};
+          background-image:
+            radial-gradient(circle at 25% 15%, ${COLORS.champagnePale}99 0%, transparent 60%),
+            radial-gradient(circle at 75% 85%, ${COLORS.blushPale}66 0%, transparent 55%),
+            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.15 0 0 0 0 0.1 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+          background-attachment: fixed, fixed, fixed;
+          background-size: cover, cover, 240px 240px;
+        }
         a { color: inherit; }
+        a:focus-visible { outline: 2px solid ${COLORS.cognac}; outline-offset: 3px; }
       `}</style>
       <div style={{
         maxWidth: 480,
