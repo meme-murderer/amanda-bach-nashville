@@ -623,6 +623,67 @@ const HomePage = () => {
         </p>
       </div>
 
+      {/* Framed engagement photo. Hides gracefully if hero.jpg is missing. */}
+      <div style={{ padding: "8px 28px 32px", textAlign: "center", ...fadeIn(0.1) }}>
+        <figure
+          style={{
+            display: "inline-block",
+            margin: 0,
+            padding: "14px 14px 18px",
+            background: COLORS.white,
+            border: `1px solid ${COLORS.hairline}`,
+            boxShadow:
+              "0 18px 40px rgba(45,37,32,0.10), 0 4px 10px rgba(45,37,32,0.06)",
+            maxWidth: 320,
+            width: "100%",
+            position: "relative",
+          }}
+        >
+          {/* Hairline gold inner frame line — tiny editorial detail */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 8,
+              border: `1px solid ${COLORS.goldLight}`,
+              pointerEvents: "none",
+              opacity: 0.45,
+            }}
+          />
+          <img
+            src={`${import.meta.env.BASE_URL}hero.jpg`}
+            alt="Amanda and her fiancé"
+            loading="eager"
+            onError={(e) => {
+              // If hero.jpg isn't in /public yet, hide the whole frame
+              // so the layout still looks intentional.
+              const figure = e.currentTarget.closest("figure");
+              if (figure) figure.style.display = "none";
+            }}
+            style={{
+              display: "block",
+              width: "100%",
+              height: "auto",
+              objectFit: "cover",
+              position: "relative",
+              zIndex: 1,
+            }}
+          />
+          <figcaption
+            style={{
+              fontFamily: FONTS.script,
+              fontSize: 26,
+              color: COLORS.cognac,
+              margin: "12px 0 0",
+              lineHeight: 1,
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            the happy couple
+          </figcaption>
+        </figure>
+      </div>
+
       {/* Roundup */}
       <div style={{ padding: "20px 28px 40px", ...fadeIn(0.15) }}>
         <div style={{ textAlign: "center" }}>
