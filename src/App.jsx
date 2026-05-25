@@ -1260,11 +1260,31 @@ const DetailsPage = () => (
 
 // ============== APP ==============
 
+// Parse /amanda-bach-nashville/<page> from the URL so deep links work.
+const PAGES = ["home", "thursday", "friday", "saturday", "sunday", "details"];
+const getPageFromUrl = () => {
+  if (typeof window === "undefined") return "home";
+  const path = window.location.pathname.replace(/\/+$/, "").split("/").pop();
+  return PAGES.includes(path) ? path : "home";
+};
+
 export default function App() {
-  const [page, setPage] = useState("home");
+  const [page, setPage] = useState(getPageFromUrl);
+
+  // Keep the URL in sync, and handle back/forward.
+  useEffect(() => {
+    const onPop = () => setPage(getPageFromUrl());
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   const navigate = (id) => {
     setPage(id);
+    const base = import.meta.env.BASE_URL || "/";
+    const url = id === "home" ? base : `${base.replace(/\/$/, "")}/${id}`;
+    if (window.location.pathname !== url) {
+      window.history.pushState({}, "", url);
+    }
     window.scrollTo({ top: 0, behavior: "instant" });
   };
 
