@@ -95,6 +95,7 @@ const VENUES = {
   fallCreek: { name: "Fall Creek Falls",          q: "Fall Creek Falls State Park, Tennessee" },
   kyuramen:  { name: "Kyuramen",                  q: "Kyuramen, Nashville TN" },
   bna:       { name: "BNA Airport",               q: "Nashville International Airport BNA" },
+  memphis:   { name: "Memphis, TN",                q: "Memphis Tennessee" },
 };
 
 const mapsSearchUrl = (q) =>
@@ -271,6 +272,13 @@ const BottomNav = ({ active, onNavigate }) => (
     zIndex: 100,
     maxWidth: 480,
     margin: "0 auto",
+    // Defensive: stronger shadow + own stacking context so older iOS
+    // Safari can't push it under browser chrome on tall scroll pages.
+    boxShadow: "0 -4px 14px rgba(45,37,32,0.08)",
+    transform: "translateZ(0)",
+    willChange: "transform",
+    WebkitBackdropFilter: "blur(8px)",
+    backdropFilter: "blur(8px)",
   }}>
     {NAV_ITEMS.map((item) => {
       const isActive = active === item.id;
@@ -278,9 +286,13 @@ const BottomNav = ({ active, onNavigate }) => (
         <button
           key={item.id}
           onClick={() => onNavigate(item.id)}
+          type="button"
           style={{
             background: "none",
             border: "none",
+            cursor: "pointer",
+            WebkitAppearance: "none",
+            touchAction: "manipulation",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -883,24 +895,25 @@ const SundayPage = () => (
     <PageHeader kicker="Day Four" title="Sunday" subtitle="May 31 · Adios, Nashville" />
 
     <div style={{ padding: "0 0 24px" }}>
-      <TimeBlock time="7:00 AM"  title="Burlyn Departs"            description="Early flight out." venue="bna" />
+      <TimeBlock time="7:00 AM"  title="Burlyn Departs"            description="Early flight out of BNA." venue="bna" />
       <TimeBlock time="11:00 AM" title="Check Out of Airbnb"       description="Pack up, tidy up, head out by 11." highlight />
-      <TimeBlock time="5:43 PM"  title="Vanessa Departs"           description="Last flight out." venue="bna" />
-      <TimeBlock time="Anytime"  title="Jandee & Niraj Drive Home" description="Hitting the road whenever." />
+      <TimeBlock time="After Checkout" title="Road Trip to Memphis" description="Amanda, Jess, and Ella are driving back to Memphis with Niraj and Jandee. One car, the whole crew, ~3 hours west on I-40." highlight />
+      <TimeBlock time="5:43 PM"  title="Vanessa Departs"           description="Last flight out of BNA." venue="bna" />
+      <TimeBlock time="When Ready" title="Leslie Heads Out"        description="Leslie on her own timing." />
     </div>
 
     <InfoCard kicker="Heading Home" title="Departures">
-      <GuestRow name="Burlyn"          info="Sun · 7:00 AM" />
-      <GuestRow name="Vanessa"         info="Sun · 5:43 PM" />
-      <GuestRow name="Jandee & Niraj"  info="Driving home" />
-      <GuestRow name="Amanda, Jess, Ella, Leslie" info="See your own" />
+      <GuestRow name="Burlyn"  info="Sun · 7:00 AM · Flight" />
+      <GuestRow name="Amanda, Jess, Ella, Niraj, Jandee" info="Driving to Memphis" />
+      <GuestRow name="Vanessa" info="Sun · 5:43 PM · Flight" />
+      <GuestRow name="Leslie"  info="On her own timing" />
     </InfoCard>
 
     <DayMap
       kicker="The Map"
-      title="To The Airport"
-      centerQuery="Nashville International Airport BNA"
-      stops={["bna"]}
+      title="Heading Home"
+      centerQuery="Nashville Tennessee to Memphis Tennessee"
+      stops={["bna", "memphis"]}
     />
 
     <div style={{ textAlign: "center", padding: "60px 28px 20px" }}>
@@ -1021,9 +1034,10 @@ const DetailsPage = () => (
       </InfoCard>
 
       <InfoCard kicker="Outbound" title="Departures">
-        <GuestRow name="Burlyn"  info="Sun · 7:00 AM" />
-        <GuestRow name="Vanessa" info="Sun · 5:43 PM" />
-        <GuestRow name="Jandee & Niraj" info="Driving Sun" />
+        <GuestRow name="Burlyn"  info="Sun · 7:00 AM · Flight" />
+        <GuestRow name="Amanda, Jess, Ella, Niraj, Jandee" info="Driving to Memphis" />
+        <GuestRow name="Vanessa" info="Sun · 5:43 PM · Flight" />
+        <GuestRow name="Leslie"  info="On her own timing" />
       </InfoCard>
 
       <InfoCard kicker="What It Costs" title="Cost Breakdown">
@@ -1280,12 +1294,19 @@ export default function App() {
 
   const navigate = (id) => {
     setPage(id);
-    const base = import.meta.env.BASE_URL || "/";
-    const url = id === "home" ? base : `${base.replace(/\/$/, "")}/${id}`;
-    if (window.location.pathname !== url) {
-      window.history.pushState({}, "", url);
-    }
-    window.scrollTo({ top: 0, behavior: "instant" });
+    // History + scroll are best-effort. Older iOS Safari can throw on
+    // scrollTo({behavior:'instant'}), so use positional args and isolate
+    // each side-effect — navigation must never fail because of these.
+    try {
+      const base = import.meta.env.BASE_URL || "/";
+      const url = id === "home" ? base : `${base.replace(/\/$/, "")}/${id}`;
+      if (window.location.pathname !== url) {
+        window.history.pushState({}, "", url);
+      }
+    } catch { /* ignore */ }
+    try {
+      window.scrollTo(0, 0);
+    } catch { /* ignore */ }
   };
 
   const renderPage = () => {
