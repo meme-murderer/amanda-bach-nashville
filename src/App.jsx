@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 // Palette tuned to Amanda's mood board: blush peony, sage green, cognac,
 // champagne ivory. Keep it upscale, not costumey.
 const COLORS = {
-  blush: "#C68F92",          // deeper peony — primary "bloom"
+  blush: "#C68F92",          // deeper peony, primary "bloom"
   blushSoft: "#D9A8AB",
   blushLight: "#E8CACC",
   blushPale: "#F8ECEC",
@@ -101,11 +101,11 @@ const VENUES = {
 const mapsSearchUrl = (q) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
 
-// Multi-stop directions URL — opens Google Maps native app on mobile.
+// Multi-stop directions URL. Opens Google Maps native app on mobile.
 const mapsDirUrl = (stops) =>
   `https://www.google.com/maps/dir/${stops.map((s) => encodeURIComponent(s)).join("/")}`;
 
-// Embedded map iframe (no API key needed — uses the legacy embed endpoint).
+// Embedded map iframe (no API key needed, uses the legacy embed endpoint).
 const mapsEmbedUrl = (q) =>
   `https://maps.google.com/maps?q=${encodeURIComponent(q)}&z=13&output=embed`;
 
@@ -639,7 +639,7 @@ const HomePage = () => {
             position: "relative",
           }}
         >
-          {/* Hairline gold inner frame line — tiny editorial detail */}
+          {/* Hairline gold inner frame line, tiny editorial detail */}
           <div
             style={{
               position: "absolute",
@@ -760,7 +760,7 @@ const HomePage = () => {
             fontStyle: "italic",
             letterSpacing: "-0.5px",
           }}>
-            Eight Riders
+            Seven Riders
           </h3>
           <Hairline color={COLORS.sandLight} margin="22px auto 24px" width={36} />
         </div>
@@ -768,7 +768,6 @@ const HomePage = () => {
         {[
           { name: "Amanda",  role: "The Bride" },
           { name: "Jess",    role: "Maid of Honor" },
-          { name: "Leslie",  role: "" },
           { name: "Ella",    role: "" },
           { name: "Vanessa", role: "" },
           { name: "Burlyn",  role: "" },
@@ -819,10 +818,9 @@ const ThursdayPage = () => (
 
     <div style={{ padding: "0 0 24px" }}>
       <TimeBlock time="3:37 PM" title="Jess & Vanessa Land"  description="First arrivals at BNA. Jess grabs the Alamo rental car." venue="bna" />
-      <TimeBlock time="4:00 PM" title="Check Into Mint House" description="Jess's unit at Mint House Nashville — 808 14th Ave N. Drop bags, settle in, freshen up." highlight venue="airbnb" />
+      <TimeBlock time="4:00 PM" title="Check Into Mint House" description="Jess's unit at Mint House Nashville, 808 14th Ave N. Drop bags, settle in, freshen up." highlight venue="airbnb" />
       <TimeBlock time="4:43 PM" title="Amanda & Ella Land"   description="The bride has arrived." venue="bna" />
-      <TimeBlock time="TBD"     title="Leslie Arrives"       description="Time TBD — joining us Thursday." />
-      <TimeBlock time="Pre-dinner" title="Walmart / Instacart Run" description="Stock the Airbnb — snacks, breakfast, drinks. Order ahead via Instacart or stop at Walmart on the way in." />
+      <TimeBlock time="Pre-dinner" title="Walmart / Instacart Run" description="Stock the Airbnb with snacks, breakfast, drinks. Order ahead via Instacart or stop at Walmart on the way in." />
       <TimeBlock time="Evening" title="East Nashville Night" description="Dinner, cocktails, dive bars." />
     </div>
 
@@ -834,7 +832,7 @@ const ThursdayPage = () => (
         margin: 0,
         lineHeight: 1.6,
       }}>
-        Shareable small plates, craft cocktails, and a vibrant atmosphere — perfect for the group's first night.
+        Shareable small plates, craft cocktails, and a vibrant atmosphere. Perfect for the group's first night.
       </p>
     </InfoCard>
 
@@ -846,7 +844,7 @@ const ThursdayPage = () => (
         margin: 0,
         lineHeight: 1.6,
       }}>
-        Speakeasy-style cocktails — no menu, just tell them what you like.
+        Speakeasy-style cocktails. No menu, just tell them what you like.
       </p>
     </InfoCard>
 
@@ -876,7 +874,7 @@ const FridayPage = () => (
         margin: "0 0 14px",
         lineHeight: 1.6,
       }}>
-        Friday is the group dress-up day. <strong>Denim</strong> with <strong>blush pink and gold accents</strong> — Amanda in white. Pink mustaches all around.
+        Friday is the group dress-up day. <strong>Denim</strong> with <strong>blush pink and gold accents</strong>, Amanda in white. Pink mustaches all around. We've got the <strong>Pedal Tavern</strong> in the afternoon, so wear shorts.
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
         <DresscodeTag label="Amanda · White" color={COLORS.textLight} />
@@ -889,19 +887,19 @@ const FridayPage = () => (
     <div style={{ padding: "8px 0 24px" }}>
       <TimeBlock time="6:00 AM"  title="Burlyn Lands"               description="Early bird arrival." />
       <TimeBlock time="AM"       title="Jandee & Niraj Drive In"    description="Hitting Nashville Friday morning." />
-      <TimeBlock time="Early"    title="Surprise Decor Setup"       description="Jess, Leslie, Jandee & Niraj decorate the Airbnb while Amanda is still asleep." highlight />
+      <TimeBlock time="Early"    title="Surprise Decor Setup"       description="Jess, Jandee & Niraj decorate the Airbnb while Amanda is still asleep." highlight />
       <TimeBlock time="10:00 AM" title="Brunch at Bacco"            description="Reservation for the group. Hand out BINGO cards to the ladies." venue="bacco" />
-      <TimeBlock time="11:30 AM" title="Line Dance Lessons"         description="Category 10 — free. Class runs ~11:30 to 1:30. Warm up for tonight." venue="cat10" />
-      <TimeBlock time="1:50 PM"  title="Arrive at Pedal Tavern"     description="$72 pp (gratuity included). Tour departs 2:20 PM — be there by 1:50." highlight venue="pedal" />
-      <TimeBlock time="4:15 PM"  title="Early Dinner"               description="The Hampton Social Rooftop — reservation at 4:15." venue="hampton" />
-      <TimeBlock time="4:00 PM+" title="Jandee & Niraj Check Into Mint House" description="Their unit's check-in opens at 4. Same building as Jess's group — 808 14th Ave N." venue="airbnb" />
+      <TimeBlock time="11:30 AM" title="Line Dance Lessons"         description="Category 10. Free class, runs ~11:30 to 1:30. Warm up for tonight." venue="cat10" />
+      <TimeBlock time="1:50 PM"  title="Arrive at Pedal Tavern"     description="$72 pp (gratuity included). Tour departs 2:20 PM, be there by 1:50." highlight venue="pedal" />
+      <TimeBlock time="4:15 PM"  title="Early Dinner"               description="The Hampton Social Rooftop. Reservation at 4:15." venue="hampton" />
+      <TimeBlock time="4:00 PM+" title="Jandee & Niraj Check Into Mint House" description="Their unit's check-in opens at 4. Same building as Jess's group, 808 14th Ave N." venue="airbnb" />
       <TimeBlock time="Evening"  title="Drop Car & Freshen Up"      description="Back to Mint House, change clothes, regroup for Broadway." />
-      <TimeBlock time="Night"    title="Broadway Night Out"         description="The main event — honky-tonks all the way down Lower Broadway." />
+      <TimeBlock time="Night"    title="Broadway Night Out"         description="The main event. Honky-tonks all the way down Lower Broadway." />
     </div>
 
     <InfoCard kicker="The Main Event" title="Broadway Lineup">
       <VenueCard venue="tootsies" name="Tootsies Orchid Lounge"   desc="Classic honky-tonk, cold drinks" />
-      <VenueCard venue="cat10"    name="Category 10"              desc="Line dancing — round two" />
+      <VenueCard venue="cat10"    name="Category 10"              desc="Line dancing, round two" />
       <VenueCard venue="roberts"  name="Robert's Western World"   desc="Recession Special late-night snack" highlight />
     </InfoCard>
 
@@ -930,17 +928,36 @@ const SaturdayPage = () => (
         link="https://tnstateparks.com/parks/fall-creek-falls"
         linkText="Park info"
       />
-      <TimeBlock time="Late PM"   title="Late Lunch"                description="Kyuramen — takeout option available if we're worn out." venue="kyuramen" />
+      <TimeBlock time="Late PM"   title="Late Lunch"                description="Kyuramen. Takeout option available if we're worn out." venue="kyuramen" />
       <TimeBlock time="Evening"   title="Steak Dinner at the Airbnb" description="Grill steaks & veggies. Home-cooked group dinner." />
-      <TimeBlock time="Night"     title="Pool Party & Game Night"   description="Close out the night poolside — bring games." highlight />
+      <TimeBlock time="Night"     title="Pool Party & Game Night"   description="Close out the night poolside. Bring games." highlight />
     </div>
 
     <InfoCard kicker="Don't Forget" title="Packing Reminder">
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-        {["Hiking shoes", "Swimsuit", "Towel", "Sunscreen", "Bug spray", "Water bottle"].map((item, i) => (
+      <p style={{
+        fontFamily: FONTS.body,
+        fontSize: 13,
+        color: COLORS.textLight,
+        margin: "0 0 12px",
+        lineHeight: 1.6,
+      }}>
+        Bring your own:
+      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 14 }}>
+        {["Hiking shoes", "Swimsuit", "Water bottle"].map((item, i) => (
           <DresscodeTag key={i} label={item} color={COLORS.sageDark} />
         ))}
       </div>
+      <p style={{
+        fontFamily: FONTS.accent,
+        fontSize: 14,
+        color: COLORS.cognacDark,
+        margin: 0,
+        fontStyle: "italic",
+        letterSpacing: "0.3px",
+      }}>
+        Jandee is bringing towels, bug spray, and sunscreen for the group.
+      </p>
     </InfoCard>
 
     <DayMap
@@ -961,14 +978,12 @@ const SundayPage = () => (
       <TimeBlock time="11:00 AM" title="Check Out of Mint House" description="Both units out by 11. Pack up, tidy up." highlight venue="airbnb" />
       <TimeBlock time="After Checkout" title="Road Trip to Memphis" description="Amanda, Jess, and Ella are driving back to Memphis with Niraj and Jandee. One car, the whole crew, ~3 hours west on I-40." highlight />
       <TimeBlock time="5:43 PM"  title="Vanessa Departs"           description="Last flight out of BNA." venue="bna" />
-      <TimeBlock time="When Ready" title="Leslie Heads Out"        description="Leslie on her own timing." />
     </div>
 
     <InfoCard kicker="Heading Home" title="Departures">
       <GuestRow name="Burlyn"  info="Sun · 7:00 AM · Flight" />
       <GuestRow name="Amanda, Jess, Ella, Niraj, Jandee" info="Driving to Memphis" />
       <GuestRow name="Vanessa" info="Sun · 5:43 PM · Flight" />
-      <GuestRow name="Leslie"  info="On her own timing" />
     </InfoCard>
 
     <DayMap
@@ -1047,10 +1062,10 @@ const DetailsPage = () => (
           fontStyle: "italic",
           letterSpacing: "0.2px",
         }}>
-          Two units in the same building — the women in Jess's, the boys in Jandee's.
+          Two units in the same building. The women in Jess's, the boys in Jandee's.
         </p>
 
-        {/* Unit 1 — Jess's Airbnb */}
+        {/* Unit 1, Jess's Airbnb */}
         <div style={{
           padding: "16px 18px",
           marginBottom: 12,
@@ -1075,7 +1090,7 @@ const DetailsPage = () => (
             margin: "0 0 4px",
             lineHeight: 1.6,
           }}>
-            <strong>Sleeps 6</strong> · Amanda, Jess, Leslie, Ella, Vanessa, Burlyn
+            <strong>Sleeps 5</strong> · Amanda, Jess, Ella, Vanessa, Burlyn
           </p>
           <p style={{
             fontFamily: FONTS.body,
@@ -1136,7 +1151,7 @@ const DetailsPage = () => (
           </div>
         </div>
 
-        {/* Unit 2 — Jandee's Expedia booking */}
+        {/* Unit 2, Jandee's Expedia booking */}
         <div style={{
           padding: "16px 18px",
           background: COLORS.sagePale,
@@ -1207,7 +1222,6 @@ const DetailsPage = () => (
       <InfoCard kicker="Inbound" title="Arrivals">
         <GuestRow name="Amanda"  info="Thu · 4:43 PM" />
         <GuestRow name="Jess"    info="Thu · 3:37 PM" />
-        <GuestRow name="Leslie"  info="Thursday TBD" />
         <GuestRow name="Ella"    info="Thu · 4:43 PM" />
         <GuestRow name="Vanessa" info="Thu · 3:37 PM" />
         <GuestRow name="Burlyn"  info="Fri · 6:00 AM" />
@@ -1219,8 +1233,7 @@ const DetailsPage = () => (
         <GuestRow name="Burlyn"  info="Sun · 7:00 AM · Flight" />
         <GuestRow name="Amanda, Jess, Ella, Niraj, Jandee" info="Driving to Memphis" />
         <GuestRow name="Vanessa" info="Sun · 5:43 PM · Flight" />
-        <GuestRow name="Leslie"  info="On her own timing" />
-      </InfoCard>
+        </InfoCard>
 
       <InfoCard kicker="What It Costs" title="Cost Breakdown">
         {[
@@ -1290,7 +1303,7 @@ const DetailsPage = () => (
           fontStyle: "italic",
           letterSpacing: "0.3px",
         }}>
-          Per person, for the six women in Jess's unit. Jandee & Niraj's Mint House unit is booked separately. Food, drinks, and Ubers not included.
+          Per person, for the five women in Jess's unit. Jandee & Niraj's Mint House unit is booked separately. Food, drinks, and Ubers not included.
         </p>
       </InfoCard>
 
@@ -1306,7 +1319,7 @@ const DetailsPage = () => (
               margin: "0 0 10px",
               lineHeight: 1.6,
             }}>
-              Venmo for the Airbnb, rental car, and Pedal Tavern — the $303 fixed costs.
+              Venmo for the Airbnb, rental car, and Pedal Tavern. The $303 fixed costs.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               <a
@@ -1357,7 +1370,7 @@ const DetailsPage = () => (
               fontStyle: "italic",
               letterSpacing: "0.3px",
             }}>
-              Opens Venmo with Jess and "Nashville Bach" pre-filled — just enter your amount.
+              Opens Venmo with Jess and "Nashville Bach" pre-filled. Just enter your amount.
             </p>
           </div>
 
@@ -1370,7 +1383,7 @@ const DetailsPage = () => (
               margin: "0 0 10px",
               lineHeight: 1.6,
             }}>
-              We're using <strong>Splitwise</strong> for the weekend — take turns paying for meals out, then settle up at the end of the trip.
+              We're using <strong>Splitwise</strong> for the weekend. Take turns paying for meals out, then settle up at the end of the trip.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               <a
@@ -1478,7 +1491,7 @@ export default function App() {
     setPage(id);
     // History + scroll are best-effort. Older iOS Safari can throw on
     // scrollTo({behavior:'instant'}), so use positional args and isolate
-    // each side-effect — navigation must never fail because of these.
+    // each side-effect. Navigation must never fail because of these.
     try {
       const base = import.meta.env.BASE_URL || "/";
       const url = id === "home" ? base : `${base.replace(/\/$/, "")}/${id}`;
