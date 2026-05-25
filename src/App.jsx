@@ -129,6 +129,268 @@ const MapLink = ({ venueKey, children, color }) => {
   );
 };
 
+// ============== WEATHER ==============
+
+// Open-Meteo: free, no API key, ~16-day hourly forecast.
+const WEATHER_LOC = { lat: 36.16, lng: -86.78, label: "Nashville" };
+const TRIP_DATES = {
+  thursday: "2026-05-28",
+  friday:   "2026-05-29",
+  saturday: "2026-05-30",
+  sunday:   "2026-05-31",
+};
+
+// Module-level cache so navigating between day pages doesn't refetch.
+let weatherCache = null;
+let weatherInFlight = null;
+
+const fetchWeather = () => {
+  if (weatherCache) return Promise.resolve(weatherCache);
+  if (weatherInFlight) return weatherInFlight;
+  const url =
+    `https://api.open-meteo.com/v1/forecast` +
+    `?latitude=${WEATHER_LOC.lat}&longitude=${WEATHER_LOC.lng}` +
+    `&hourly=temperature_2m,precipitation_probability,weather_code` +
+    `&temperature_unit=fahrenheit` +
+    `&timezone=America%2FChicago` +
+    `&start_date=${TRIP_DATES.thursday}&end_date=${TRIP_DATES.sunday}`;
+  weatherInFlight = fetch(url)
+    .then((r) => { if (!r.ok) throw new Error("Forecast unavailable"); return r.json(); })
+    .then((data) => { weatherCache = data; weatherInFlight = null; return data; })
+    .catch((err) => { weatherInFlight = null; throw err; });
+  return weatherInFlight;
+};
+
+const useWeather = () => {
+  const [state, setState] = useState({ loading: true, data: null, error: null });
+  useEffect(() => {
+    let mounted = true;
+    fetchWeather()
+      .then((data) => { if (mounted) setState({ loading: false, data, error: null }); })
+      .catch((err) => { if (mounted) setState({ loading: false, data: null, error: err.message }); });
+    return () => { mounted = false; };
+  }, []);
+  return state;
+};
+
+// Rank WMO weather codes by "worst" so we pick the most notable condition
+// for the bucket (rain trumps clear, storms trump rain, etc.).
+const codePriority = (c) => {
+  if (c >= 95) return 6;                                   // thunderstorm
+  if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return 5; // rain / showers
+  if (c >= 71 && c <= 86) return 4;                        // snow
+  if (c >= 45 && c <= 48) return 3;                        // fog
+  if (c === 3) return 2;                                   // overcast
+  if (c >= 1 && c <= 2) return 1;                          // partly cloudy
+  return 0;                                                // clear
+};
+
+const bucketWeather = (data, dateStr) => {
+  if (!data?.hourly?.time) return null;
+  const { time, temperature_2m, precipitation_probability, weather_code } = data.hourly;
+  const buckets = { morning: [], afternoon: [], evening: [] };
+  for (let i = 0; i < time.length; i++) {
+    if (!time[i].startsWith(dateStr)) continue;
+    const hour = parseInt(time[i].slice(11, 13), 10);
+    const e = {
+      temp: temperature_2m[i],
+      precip: precipitation_probability[i] ?? 0,
+      code: weather_code[i],
+    };
+    if (hour >= 6 && hour < 12) buckets.morning.push(e);
+    else if (hour >= 12 && hour < 18) buckets.afternoon.push(e);
+    else if (hour >= 18 && hour < 24) buckets.evening.push(e);
+  }
+  const summarize = (entries) => {
+    if (!entries.length) return null;
+    const temp = Math.round(entries.reduce((s, x) => s + x.temp, 0) / entries.length);
+    const precip = Math.round(Math.max(...entries.map((x) => x.precip)));
+    const code = entries.reduce(
+      (worst, x) => (codePriority(x.code) > codePriority(worst) ? x.code : worst),
+      entries[0].code,
+    );
+    return { temp, precip, code };
+  };
+  return {
+    morning:   summarize(buckets.morning),
+    afternoon: summarize(buckets.afternoon),
+    evening:   summarize(buckets.evening),
+  };
+};
+
+const wstroke = { stroke: "currentColor", strokeWidth: 1.3, fill: "none", strokeLinecap: "round", strokeLinejoin: "round" };
+
+const WIcons = {
+  sun: (s = 28) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" {...wstroke}>
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  ),
+  partlyCloudy: (s = 28) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" {...wstroke}>
+      <circle cx="7" cy="7" r="2.5" />
+      <path d="M7 1.5v1.5M2.5 7H1M3.8 3.8l-1-1M10.2 3.8l1-1" />
+      <path d="M19 18h-9a3.5 3.5 0 010-7 4.5 4.5 0 018.6 1.3A3 3 0 0119 18z" />
+    </svg>
+  ),
+  cloudy: (s = 28) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" {...wstroke}>
+      <path d="M18 16h-9a4 4 0 010-8 5.5 5.5 0 0110.6 1.5A3.5 3.5 0 0118 16z" />
+    </svg>
+  ),
+  fog: (s = 28) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" {...wstroke}>
+      <path d="M18 13h-9a3.5 3.5 0 010-7 5 5 0 019.6 1.4A3 3 0 0118 13z" />
+      <path d="M4 17h16M7 21h12" />
+    </svg>
+  ),
+  rain: (s = 28) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" {...wstroke}>
+      <path d="M18 13h-9a3.5 3.5 0 010-7 5 5 0 019.6 1.4A3 3 0 0118 13z" />
+      <path d="M8 17v3M12 17v4M16 17v3" />
+    </svg>
+  ),
+  storm: (s = 28) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" {...wstroke}>
+      <path d="M18 13h-9a3.5 3.5 0 010-7 5 5 0 019.6 1.4A3 3 0 0118 13z" />
+      <path d="M13 15l-3 4h3l-2 4" />
+    </svg>
+  ),
+  snow: (s = 28) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" {...wstroke}>
+      <path d="M18 13h-9a3.5 3.5 0 010-7 5 5 0 019.6 1.4A3 3 0 0118 13z" />
+      <path d="M8 17v.01M12 17v.01M16 17v.01M8 20v.01M12 20v.01M16 20v.01M10 22v.01M14 22v.01" />
+    </svg>
+  ),
+};
+
+const codeToIcon = (c) => {
+  if (c === 0) return WIcons.sun;
+  if (c <= 2) return WIcons.partlyCloudy;
+  if (c === 3) return WIcons.cloudy;
+  if (c >= 45 && c <= 48) return WIcons.fog;
+  if (c >= 95) return WIcons.storm;
+  if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return WIcons.rain;
+  if (c >= 71 && c <= 86) return WIcons.snow;
+  return WIcons.cloudy;
+};
+
+const codeToLabel = (c) => {
+  if (c === 0) return "Sunny";
+  if (c === 1) return "Mostly Sunny";
+  if (c === 2) return "Partly Cloudy";
+  if (c === 3) return "Overcast";
+  if (c >= 45 && c <= 48) return "Fog";
+  if (c >= 95) return "Storms";
+  if (c >= 51 && c <= 55) return "Drizzle";
+  if ((c >= 61 && c <= 67) || (c >= 80 && c <= 82)) return "Rain";
+  if (c >= 71 && c <= 86) return "Snow";
+  return "Cloudy";
+};
+
+const WeatherCell = ({ label, summary }) => {
+  if (!summary) {
+    return (
+      <div style={{ flex: 1, textAlign: "center", padding: "16px 8px" }}>
+        <p style={{
+          fontFamily: FONTS.body, fontSize: 9, fontWeight: 700,
+          color: COLORS.textMuted, letterSpacing: "1.5px", textTransform: "uppercase",
+          margin: 0,
+        }}>{label}</p>
+        <p style={{
+          fontFamily: FONTS.accent, fontSize: 13, color: COLORS.textMuted,
+          margin: "12px 0 0", fontStyle: "italic",
+        }}>—</p>
+      </div>
+    );
+  }
+  const Icon = codeToIcon(summary.code);
+  return (
+    <div style={{ flex: 1, textAlign: "center", padding: "14px 6px" }}>
+      <p style={{
+        fontFamily: FONTS.body, fontSize: 9, fontWeight: 700,
+        color: COLORS.textMuted, letterSpacing: "1.5px", textTransform: "uppercase",
+        margin: "0 0 10px",
+      }}>{label}</p>
+      <div style={{ color: COLORS.cognac, marginBottom: 6, display: "flex", justifyContent: "center", lineHeight: 0 }}>
+        <Icon size={28} />
+      </div>
+      <p style={{
+        fontFamily: FONTS.display, fontSize: 22, fontStyle: "italic",
+        fontWeight: 400, color: COLORS.text, margin: "0 0 2px", lineHeight: 1,
+      }}>
+        {summary.temp}°
+      </p>
+      <p style={{
+        fontFamily: FONTS.accent, fontSize: 11, color: COLORS.textLight,
+        margin: 0, fontStyle: "italic",
+      }}>
+        {codeToLabel(summary.code)}
+      </p>
+      {summary.precip >= 20 && (
+        <p style={{
+          fontFamily: FONTS.body, fontSize: 10, color: COLORS.sageDark,
+          margin: "6px 0 0", fontWeight: 700, letterSpacing: "0.3px",
+        }}>
+          {summary.precip}% rain
+        </p>
+      )}
+    </div>
+  );
+};
+
+const WeatherStrip = ({ date, locationLabel }) => {
+  const { loading, data, error } = useWeather();
+  const summary = data ? bucketWeather(data, date) : null;
+  const hasData = summary && (summary.morning || summary.afternoon || summary.evening);
+
+  return (
+    <div style={{ padding: "16px 16px 0" }}>
+      <div style={{
+        background: COLORS.white,
+        border: `1px solid ${COLORS.hairline}`,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+      }}>
+        <div style={{ textAlign: "center", padding: "14px 16px 8px" }}>
+          <Kicker mb={2} size={9}>The Forecast</Kicker>
+          <p style={{
+            fontFamily: FONTS.accent, fontSize: 12, color: COLORS.textMuted,
+            margin: 0, fontStyle: "italic", letterSpacing: "0.3px",
+          }}>
+            {locationLabel || WEATHER_LOC.label}
+          </p>
+        </div>
+        {loading && (
+          <p style={{
+            fontFamily: FONTS.accent, fontSize: 13, color: COLORS.textMuted,
+            margin: 0, textAlign: "center", padding: "20px 0 22px",
+            fontStyle: "italic", borderTop: `1px solid ${COLORS.hairline}`,
+          }}>Loading forecast…</p>
+        )}
+        {!loading && !hasData && (
+          <p style={{
+            fontFamily: FONTS.accent, fontSize: 13, color: COLORS.textMuted,
+            margin: 0, textAlign: "center", padding: "20px 16px 22px",
+            fontStyle: "italic", borderTop: `1px solid ${COLORS.hairline}`,
+          }}>
+            {error ? "Forecast unavailable right now." : "Forecast not posted yet."}
+          </p>
+        )}
+        {!loading && hasData && (
+          <div style={{ display: "flex", borderTop: `1px solid ${COLORS.hairline}` }}>
+            <WeatherCell label="Morning"   summary={summary.morning} />
+            <div style={{ width: 1, background: COLORS.hairline }} />
+            <WeatherCell label="Afternoon" summary={summary.afternoon} />
+            <div style={{ width: 1, background: COLORS.hairline }} />
+            <WeatherCell label="Evening"   summary={summary.evening} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const DayMap = ({ kicker = "Map", title, centerQuery, stops = [] }) => {
   // stops is an array of venueKeys for multi-stop directions
   const dirStops = stops.map((k) => VENUES[k]?.q).filter(Boolean);
@@ -815,6 +1077,7 @@ const HomePage = () => {
 const ThursdayPage = () => (
   <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.thu) }}>
     <PageHeader kicker="Day One" title="Thursday" subtitle="May 28 · Arrival Day" />
+    <WeatherStrip date={TRIP_DATES.thursday} />
 
     <div style={{ padding: "0 0 24px" }}>
       <TimeBlock time="3:37 PM" title="Jess & Vanessa Land"  description="First arrivals at BNA. Jess grabs the Alamo rental car." venue="bna" />
@@ -865,6 +1128,7 @@ const ThursdayPage = () => (
 const FridayPage = () => (
   <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.fri) }}>
     <PageHeader kicker="Day Two" title="Friday" subtitle="May 29 · The Big Day Out" />
+    <WeatherStrip date={TRIP_DATES.friday} />
 
     <InfoCard kicker="What To Wear" title="Dress Code">
       <p style={{
@@ -919,6 +1183,7 @@ const SaturdayPage = () => {
   return (
     <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.sat) }}>
       <PageHeader kicker="Day Three" title="Saturday" subtitle="May 30 · Chill & Adventure" />
+      <WeatherStrip date={TRIP_DATES.saturday} locationLabel="Nashville & Fall Creek Falls" />
 
       <div style={{ padding: "0 0 24px" }}>
         <TimeBlock time="Morning"   title="Sleep In"                  description="Recovery mode. Take it easy." />
@@ -1127,6 +1392,7 @@ const SaturdayPage = () => {
 const SundayPage = () => (
   <div style={{ minHeight: "100vh", background: COLORS.ivory, paddingBottom: 100, ...themeVars(THEMES.sun) }}>
     <PageHeader kicker="Day Four" title="Sunday" subtitle="May 31 · Adios, Nashville" />
+    <WeatherStrip date={TRIP_DATES.sunday} />
 
     <div style={{ padding: "0 0 24px" }}>
       <TimeBlock time="7:00 AM"  title="Burlyn Departs"            description="Early flight out of BNA." venue="bna" />
