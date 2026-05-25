@@ -81,7 +81,7 @@ const Kicker = ({ children, color, size = 10, mb = 8, useTheme = false }) => (
 
 // Each venue has a Google Maps search query that resolves cleanly to the right pin.
 const VENUES = {
-  airbnb:    { name: "Airbnb",                    q: "Nashville TN" }, // exact address private; centered on city
+  airbnb:    { name: "Mint House Nashville",      q: "Mint House Nashville Marathon Village, 808 14th Ave N, Nashville, TN 37203" },
   hawkers:   { name: "Hawkers Asian Street Food", q: "Hawkers Asian Street Food, Nashville TN" },
   attaboy:   { name: "Attaboy",                   q: "Attaboy, Nashville TN" },
   lakeside:  { name: "Lakeside Lounge",           q: "Lakeside Lounge, East Nashville TN" },
@@ -819,7 +819,7 @@ const ThursdayPage = () => (
 
     <div style={{ padding: "0 0 24px" }}>
       <TimeBlock time="3:37 PM" title="Jess & Vanessa Land"  description="First arrivals at BNA. Jess grabs the Alamo rental car." venue="bna" />
-      <TimeBlock time="4:00 PM" title="Check Into Airbnb"    description="Drop bags, settle in, freshen up." highlight />
+      <TimeBlock time="4:00 PM" title="Check Into Mint House" description="Jess's unit at Mint House Nashville — 808 14th Ave N. Drop bags, settle in, freshen up." highlight venue="airbnb" />
       <TimeBlock time="4:43 PM" title="Amanda & Ella Land"   description="The bride has arrived." venue="bna" />
       <TimeBlock time="TBD"     title="Leslie Arrives"       description="Time TBD — joining us Thursday." />
       <TimeBlock time="Pre-dinner" title="Walmart / Instacart Run" description="Stock the Airbnb — snacks, breakfast, drinks. Order ahead via Instacart or stop at Walmart on the way in." />
@@ -894,7 +894,8 @@ const FridayPage = () => (
       <TimeBlock time="11:30 AM" title="Line Dance Lessons"         description="Category 10 — free. Class runs ~11:30 to 1:30. Warm up for tonight." venue="cat10" />
       <TimeBlock time="1:50 PM"  title="Arrive at Pedal Tavern"     description="$72 pp (gratuity included). Tour departs 2:20 PM — be there by 1:50." highlight venue="pedal" />
       <TimeBlock time="4:15 PM"  title="Early Dinner"               description="The Hampton Social Rooftop — reservation at 4:15." venue="hampton" />
-      <TimeBlock time="Evening"  title="Drop Car & Freshen Up"      description="Back to the Airbnb, change clothes, regroup for Broadway." />
+      <TimeBlock time="4:00 PM+" title="Jandee & Niraj Check Into Mint House" description="Their unit's check-in opens at 4. Same building as Jess's group — 808 14th Ave N." venue="airbnb" />
+      <TimeBlock time="Evening"  title="Drop Car & Freshen Up"      description="Back to Mint House, change clothes, regroup for Broadway." />
       <TimeBlock time="Night"    title="Broadway Night Out"         description="The main event — honky-tonks all the way down Lower Broadway." />
     </div>
 
@@ -957,7 +958,7 @@ const SundayPage = () => (
 
     <div style={{ padding: "0 0 24px" }}>
       <TimeBlock time="7:00 AM"  title="Burlyn Departs"            description="Early flight out of BNA." venue="bna" />
-      <TimeBlock time="11:00 AM" title="Check Out of Airbnb"       description="Pack up, tidy up, head out by 11." highlight />
+      <TimeBlock time="11:00 AM" title="Check Out of Mint House" description="Both units out by 11. Pack up, tidy up." highlight venue="airbnb" />
       <TimeBlock time="After Checkout" title="Road Trip to Memphis" description="Amanda, Jess, and Ella are driving back to Memphis with Niraj and Jandee. One car, the whole crew, ~3 hours west on I-40." highlight />
       <TimeBlock time="5:43 PM"  title="Vanessa Departs"           description="Last flight out of BNA." venue="bna" />
       <TimeBlock time="When Ready" title="Leslie Heads Out"        description="Leslie on her own timing." />
@@ -1010,63 +1011,183 @@ const DetailsPage = () => (
     <PageHeader kicker="The Logistics" title="Details" subtitle="Need-to-Know Info" />
 
     <div style={{ padding: "8px 0" }}>
-      <InfoCard kicker="The House" title="Airbnb">
+      <InfoCard kicker="The Stay" title="Mint House Nashville">
         <p style={{
-          fontFamily: FONTS.body,
-          fontSize: 13,
-          color: COLORS.textLight,
+          fontFamily: FONTS.accent,
+          fontSize: 16,
+          color: COLORS.text,
           margin: "0 0 4px",
-          lineHeight: 1.7,
+          fontStyle: "italic",
+          letterSpacing: "0.3px",
         }}>
-          Max 6 guests · <strong>$952 total</strong> ($159 pp)
+          Marathon Village
         </p>
+        <a
+          href={mapsSearchUrl("Mint House Nashville Marathon Village, 808 14th Ave N, Nashville, TN 37203")}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: FONTS.body,
+            fontSize: 12,
+            color: COLORS.cognacDark,
+            fontWeight: 600,
+            letterSpacing: "0.3px",
+            textDecoration: "none",
+            borderBottom: `1px solid ${COLORS.sandLight}`,
+            paddingBottom: 1,
+          }}
+        >
+          808 14th Ave N, Nashville, TN 37203 →
+        </a>
         <p style={{
           fontFamily: FONTS.body,
-          fontSize: 13,
-          color: COLORS.textLight,
-          margin: "0 0 18px",
+          fontSize: 12,
+          color: COLORS.textMuted,
+          margin: "10px 0 18px",
+          fontStyle: "italic",
+          letterSpacing: "0.2px",
         }}>
-          Check-in: 4:00 PM · Check-out: 11:00 AM
+          Two units in the same building — the women in Jess's, the boys in Jandee's.
         </p>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+
+        {/* Unit 1 — Jess's Airbnb */}
+        <div style={{
+          padding: "16px 18px",
+          marginBottom: 12,
+          background: COLORS.blushPale,
+          borderLeft: `3px solid ${COLORS.blushLight}`,
+        }}>
+          <Kicker mb={4} size={9} color={COLORS.blush}>Unit 1 · Jess's Booking</Kicker>
+          <h4 style={{
+            fontFamily: FONTS.display,
+            fontSize: 18,
+            fontWeight: 500,
+            color: COLORS.text,
+            margin: "0 0 8px",
+            fontStyle: "italic",
+          }}>
+            The Women's Unit
+          </h4>
+          <p style={{
+            fontFamily: FONTS.body,
+            fontSize: 12,
+            color: COLORS.textLight,
+            margin: "0 0 4px",
+            lineHeight: 1.6,
+          }}>
+            <strong>Sleeps 6</strong> · Amanda, Jess, Leslie, Ella, Vanessa, Burlyn
+          </p>
+          <p style={{
+            fontFamily: FONTS.body,
+            fontSize: 12,
+            color: COLORS.textLight,
+            margin: "0 0 4px",
+          }}>
+            <strong>$952</strong> total · $159 per person
+          </p>
+          <p style={{
+            fontFamily: FONTS.body,
+            fontSize: 12,
+            color: COLORS.textLight,
+            margin: "0 0 12px",
+          }}>
+            Thu May 28 · 4:00 PM → Sun May 31 · 11:00 AM
+          </p>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <a
+              href="https://www.airbnb.com/rooms/1326215239593896193?viralityEntryPoint=1&s=76"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "8px 14px",
+                background: COLORS.cognacDark,
+                color: COLORS.white,
+                fontFamily: FONTS.body,
+                fontSize: 9,
+                fontWeight: 700,
+                textDecoration: "none",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+              }}
+            >
+              Primary Airbnb
+            </a>
+            <a
+              href="https://www.airbnb.com/rooms/51781831?viralityEntryPoint=1&s=76"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "8px 14px",
+                background: "transparent",
+                color: COLORS.cognacDark,
+                border: `1px solid ${COLORS.cognacDark}`,
+                fontFamily: FONTS.body,
+                fontSize: 9,
+                fontWeight: 700,
+                textDecoration: "none",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+              }}
+            >
+              Backup
+            </a>
+          </div>
+        </div>
+
+        {/* Unit 2 — Jandee's Expedia booking */}
+        <div style={{
+          padding: "16px 18px",
+          background: COLORS.sagePale,
+          borderLeft: `3px solid ${COLORS.sageLight}`,
+        }}>
+          <Kicker mb={4} size={9} color={COLORS.sageDark}>Unit 2 · Jandee's Booking</Kicker>
+          <h4 style={{
+            fontFamily: FONTS.display,
+            fontSize: 18,
+            fontWeight: 500,
+            color: COLORS.text,
+            margin: "0 0 8px",
+            fontStyle: "italic",
+          }}>
+            Deluxe One Bedroom
+          </h4>
+          <p style={{
+            fontFamily: FONTS.body,
+            fontSize: 12,
+            color: COLORS.textLight,
+            margin: "0 0 4px",
+            lineHeight: 1.6,
+          }}>
+            <strong>Sleeps 2</strong> · Jandee & Niraj
+          </p>
+          <p style={{
+            fontFamily: FONTS.body,
+            fontSize: 12,
+            color: COLORS.textLight,
+            margin: "0 0 12px",
+          }}>
+            Fri May 29 · 4:00 PM → Sun May 31 · 11:00 AM
+          </p>
           <a
-            href="https://www.airbnb.com/rooms/1326215239593896193?viralityEntryPoint=1&s=76"
+            href="https://www.expedia.com/Nashville-Hotels-Mint-House-Nashville-Marathon-Village-By-Kasa.h113638452.Hotel-Information"
             target="_blank"
             rel="noopener noreferrer"
             style={{
               display: "inline-block",
-              padding: "11px 22px",
-              background: COLORS.cognacDark,
+              padding: "8px 14px",
+              background: COLORS.sageDark,
               color: COLORS.white,
               fontFamily: FONTS.body,
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: 700,
               textDecoration: "none",
-              letterSpacing: "2px",
+              letterSpacing: "1.5px",
               textTransform: "uppercase",
             }}
           >
-            Primary Listing
-          </a>
-          <a
-            href="https://www.airbnb.com/rooms/51781831?viralityEntryPoint=1&s=76"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-block",
-              padding: "11px 22px",
-              background: "transparent",
-              color: COLORS.cognacDark,
-              border: `1px solid ${COLORS.cognacDark}`,
-              fontFamily: FONTS.body,
-              fontSize: 10,
-              fontWeight: 700,
-              textDecoration: "none",
-              letterSpacing: "2px",
-              textTransform: "uppercase",
-            }}
-          >
-            Backup Listing
+            Expedia Listing
           </a>
         </div>
       </InfoCard>
@@ -1169,7 +1290,7 @@ const DetailsPage = () => (
           fontStyle: "italic",
           letterSpacing: "0.3px",
         }}>
-          Food, drinks, and Ubers not included.
+          Per person, for the six women in Jess's unit. Jandee & Niraj's Mint House unit is booked separately. Food, drinks, and Ubers not included.
         </p>
       </InfoCard>
 
