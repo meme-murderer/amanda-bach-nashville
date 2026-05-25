@@ -778,7 +778,7 @@ const FridayPage = () => (
         margin: "0 0 14px",
         lineHeight: 1.6,
       }}>
-        Downtown day, coordinated looks. <em>Denim welcome</em> with <em>pink mustaches</em> for everyone.
+        Friday is the group dress-up day. <strong>Denim</strong> with <strong>blush pink and gold accents</strong> — Amanda in white. Pink mustaches all around.
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
         <DresscodeTag label="Amanda · White" color={COLORS.textLight} />
@@ -1071,6 +1071,103 @@ const DetailsPage = () => (
         }}>
           Food, drinks, and Ubers not included.
         </p>
+      </InfoCard>
+
+      <InfoCard kicker="From Jess" title="Coordinating">
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+
+          <div>
+            <Kicker mb={6} size={9}>Pay Jess Back · $303</Kicker>
+            <p style={{
+              fontFamily: FONTS.body,
+              fontSize: 13,
+              color: COLORS.textLight,
+              margin: "0 0 10px",
+              lineHeight: 1.6,
+            }}>
+              Venmo for the Airbnb, rental car, and Pedal Tavern — the $303 fixed costs.
+            </p>
+            <a
+              href="https://venmo.com/u/Jessica-Meyers16"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "10px 18px",
+                background: COLORS.cognacDark,
+                color: COLORS.white,
+                fontFamily: FONTS.body,
+                fontSize: 10,
+                fontWeight: 700,
+                textDecoration: "none",
+                letterSpacing: "1.8px",
+                textTransform: "uppercase",
+              }}
+            >
+              Venmo @Jessica-Meyers16
+            </a>
+          </div>
+
+          <div>
+            <Kicker mb={6} size={9}>Meals Out</Kicker>
+            <p style={{
+              fontFamily: FONTS.body,
+              fontSize: 13,
+              color: COLORS.textLight,
+              margin: "0 0 10px",
+              lineHeight: 1.6,
+            }}>
+              We're using <strong>Splitwise</strong> for the weekend — take turns paying for meals out, then settle up at the end of the trip.
+            </p>
+            <a
+              href="https://www.splitwise.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "10px 18px",
+                background: "transparent",
+                color: COLORS.cognacDark,
+                border: `1px solid ${COLORS.cognacDark}`,
+                fontFamily: FONTS.body,
+                fontSize: 10,
+                fontWeight: 700,
+                textDecoration: "none",
+                letterSpacing: "1.8px",
+                textTransform: "uppercase",
+              }}
+            >
+              Get Splitwise
+            </a>
+          </div>
+
+          <div>
+            <Kicker mb={6} size={9}>Flights</Kicker>
+            <p style={{
+              fontFamily: FONTS.body,
+              fontSize: 13,
+              color: COLORS.textLight,
+              margin: 0,
+              lineHeight: 1.6,
+            }}>
+              Text Jess your flight info once you book. She's coordinating pickups and drop-offs in the rental car to save us all on Ubers.
+            </p>
+          </div>
+
+          <div>
+            <Kicker mb={6} size={9}>Restaurant Recs</Kicker>
+            <p style={{
+              fontFamily: FONTS.body,
+              fontSize: 13,
+              color: COLORS.textLight,
+              margin: 0,
+              lineHeight: 1.6,
+            }}>
+              Reservations get locked in about a month out. If there's somewhere you're dying to go, send it to Jess now.
+            </p>
+          </div>
+
+        </div>
       </InfoCard>
 
       <DayMap
