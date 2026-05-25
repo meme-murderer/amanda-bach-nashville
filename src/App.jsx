@@ -650,7 +650,7 @@ const HomePage = () => {
             }}
           />
           <img
-            src={`${import.meta.env.BASE_URL}hero.jpg`}
+            src={`${import.meta.env.BASE_URL}hero.png`}
             alt="Amanda and her fiancé"
             loading="eager"
             onError={(e) => {
