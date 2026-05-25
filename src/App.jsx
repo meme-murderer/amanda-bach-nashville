@@ -53,6 +53,147 @@ const Kicker = ({ children, color = COLORS.cognac, size = 10, mb = 8 }) => (
   </p>
 );
 
+// ============== MAPS ==============
+
+// Each venue has a Google Maps search query that resolves cleanly to the right pin.
+const VENUES = {
+  airbnb:    { name: "Airbnb",                    q: "Nashville TN" }, // exact address private; centered on city
+  hawkers:   { name: "Hawkers Asian Street Food", q: "Hawkers Asian Street Food, Nashville TN" },
+  attaboy:   { name: "Attaboy",                   q: "Attaboy, Nashville TN" },
+  lakeside:  { name: "Lakeside Lounge",           q: "Lakeside Lounge, East Nashville TN" },
+  hubba:     { name: "Hubba Hubba",               q: "Hubba Hubba, Nashville TN" },
+  bacco:     { name: "Bacco",                     q: "Bacco, Nashville TN" },
+  cat10:     { name: "Category 10",               q: "Category 10, Broadway, Nashville TN" },
+  pedal:     { name: "Pedal Tavern",              q: "Pedal Tavern, Nashville TN" },
+  hampton:   { name: "The Hampton Social",        q: "The Hampton Social, Nashville TN" },
+  tootsies:  { name: "Tootsies Orchid Lounge",    q: "Tootsies Orchid Lounge, Broadway, Nashville TN" },
+  roberts:   { name: "Robert's Western World",    q: "Robert's Western World, Broadway, Nashville TN" },
+  fallCreek: { name: "Fall Creek Falls",          q: "Fall Creek Falls State Park, Tennessee" },
+  kyuramen:  { name: "Kyuramen",                  q: "Kyuramen, Nashville TN" },
+  bna:       { name: "BNA Airport",               q: "Nashville International Airport BNA" },
+};
+
+const mapsSearchUrl = (q) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+
+// Multi-stop directions URL — opens Google Maps native app on mobile.
+const mapsDirUrl = (stops) =>
+  `https://www.google.com/maps/dir/${stops.map((s) => encodeURIComponent(s)).join("/")}`;
+
+// Embedded map iframe (no API key needed — uses the legacy embed endpoint).
+const mapsEmbedUrl = (q) =>
+  `https://maps.google.com/maps?q=${encodeURIComponent(q)}&z=13&output=embed`;
+
+const MapLink = ({ venueKey, children, color }) => {
+  const v = VENUES[venueKey];
+  if (!v) return <>{children || venueKey}</>;
+  return (
+    <a
+      href={mapsSearchUrl(v.q)}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        color: color || "inherit",
+        textDecoration: "none",
+        borderBottom: `1px solid ${COLORS.sandLight}`,
+        paddingBottom: 1,
+      }}
+    >
+      {children || v.name}
+    </a>
+  );
+};
+
+const DayMap = ({ kicker = "Map", title, centerQuery, stops = [] }) => {
+  // stops is an array of venueKeys for multi-stop directions
+  const dirStops = stops.map((k) => VENUES[k]?.q).filter(Boolean);
+  const hasDirections = dirStops.length >= 2;
+  return (
+    <div style={{ padding: "24px 16px 0" }}>
+      {kicker && <Kicker mb={6}>{kicker}</Kicker>}
+      <h3 style={{
+        fontFamily: FONTS.display,
+        fontSize: 22,
+        fontWeight: 400,
+        color: COLORS.text,
+        margin: "0 0 14px",
+        fontStyle: "italic",
+        letterSpacing: "-0.4px",
+      }}>
+        {title}
+      </h3>
+      <div style={{
+        border: `1px solid ${COLORS.hairline}`,
+        overflow: "hidden",
+        marginBottom: 12,
+      }}>
+        <iframe
+          src={mapsEmbedUrl(centerQuery)}
+          width="100%"
+          height="240"
+          style={{ border: 0, display: "block" }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title={`Map of ${title}`}
+        />
+      </div>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        {hasDirections && (
+          <a
+            href={mapsDirUrl(dirStops)}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              padding: "10px 18px",
+              background: COLORS.cognacDark,
+              color: COLORS.white,
+              fontFamily: FONTS.body,
+              fontSize: 10,
+              fontWeight: 700,
+              textDecoration: "none",
+              letterSpacing: "1.8px",
+              textTransform: "uppercase",
+            }}
+          >
+            Day Route in Maps
+          </a>
+        )}
+        <a
+          href={mapsSearchUrl(centerQuery)}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            padding: "10px 18px",
+            background: "transparent",
+            color: COLORS.cognacDark,
+            border: `1px solid ${COLORS.cognacDark}`,
+            fontFamily: FONTS.body,
+            fontSize: 10,
+            fontWeight: 700,
+            textDecoration: "none",
+            letterSpacing: "1.8px",
+            textTransform: "uppercase",
+          }}
+        >
+          Open Area in Maps
+        </a>
+      </div>
+      <p style={{
+        fontFamily: FONTS.accent,
+        fontSize: 13,
+        color: COLORS.textMuted,
+        margin: "10px 0 0",
+        fontStyle: "italic",
+        letterSpacing: "0.3px",
+      }}>
+        Tap any venue above to open it in your Maps app.
+      </p>
+    </div>
+  );
+};
+
 // ============== NAV ==============
 
 const stroke = { stroke: "currentColor", strokeWidth: 1.4, fill: "none", strokeLinecap: "round", strokeLinejoin: "round" };
@@ -182,7 +323,7 @@ const PageHeader = ({ title, subtitle, kicker }) => (
   </div>
 );
 
-const TimeBlock = ({ time, title, description, highlight, link, linkText }) => (
+const TimeBlock = ({ time, title, description, highlight, link, linkText, venue }) => (
   <div style={{
     display: "flex",
     gap: 18,
@@ -212,7 +353,7 @@ const TimeBlock = ({ time, title, description, highlight, link, linkText }) => (
         fontStyle: "italic",
         letterSpacing: "-0.2px",
       }}>
-        {title}
+        {venue ? <MapLink venueKey={venue} color={COLORS.text}>{title}</MapLink> : title}
       </h4>
       {description && (
         <p style={{
@@ -328,7 +469,7 @@ const DresscodeTag = ({ label, color }) => (
   </span>
 );
 
-const VenueCard = ({ name, desc, highlight }) => (
+const VenueCard = ({ name, desc, highlight, venue }) => (
   <div style={{
     padding: "16px 0",
     borderBottom: `1px solid ${COLORS.hairline}`,
@@ -341,7 +482,7 @@ const VenueCard = ({ name, desc, highlight }) => (
       margin: 0,
       fontStyle: "italic",
     }}>
-      {name}
+      {venue ? <MapLink venueKey={venue} color={highlight ? COLORS.cognacDark : COLORS.text}>{name}</MapLink> : name}
     </p>
     {desc && (
       <p style={{
@@ -579,15 +720,15 @@ const ThursdayPage = () => (
     <PageHeader kicker="Day One" title="Thursday" subtitle="May 28 · Arrival Day" />
 
     <div style={{ padding: "0 0 24px" }}>
-      <TimeBlock time="3:37 PM" title="Jess & Vanessa Land"  description="First arrivals at BNA. Jess grabs the Alamo rental car." />
+      <TimeBlock time="3:37 PM" title="Jess & Vanessa Land"  description="First arrivals at BNA. Jess grabs the Alamo rental car." venue="bna" />
       <TimeBlock time="4:00 PM" title="Check Into Airbnb"    description="Drop bags, settle in, freshen up." highlight />
-      <TimeBlock time="4:43 PM" title="Amanda & Ella Land"   description="The bride has arrived." />
+      <TimeBlock time="4:43 PM" title="Amanda & Ella Land"   description="The bride has arrived." venue="bna" />
       <TimeBlock time="TBD"     title="Leslie Arrives"       description="Time TBD — joining us Thursday." />
       <TimeBlock time="Pre-dinner" title="Walmart / Instacart Run" description="Stock the Airbnb — snacks, breakfast, drinks. Order ahead via Instacart or stop at Walmart on the way in." />
       <TimeBlock time="Evening" title="East Nashville Night" description="Dinner, cocktails, dive bars." />
     </div>
 
-    <InfoCard kicker="Dinner" title="Hawkers Asian Street Food">
+    <InfoCard kicker="Dinner" title={<MapLink venueKey="hawkers" color={COLORS.text}>Hawkers Asian Street Food</MapLink>}>
       <p style={{
         fontFamily: FONTS.body,
         fontSize: 13,
@@ -599,7 +740,7 @@ const ThursdayPage = () => (
       </p>
     </InfoCard>
 
-    <InfoCard kicker="Cocktails" title="Attaboy">
+    <InfoCard kicker="Cocktails" title={<MapLink venueKey="attaboy" color={COLORS.text}>Attaboy</MapLink>}>
       <p style={{
         fontFamily: FONTS.body,
         fontSize: 13,
@@ -612,9 +753,16 @@ const ThursdayPage = () => (
     </InfoCard>
 
     <InfoCard kicker="Late Night" title="Bars After">
-      <VenueCard name="Lakeside Lounge" desc="Chill vibes, lake views" />
-      <VenueCard name="Hubba Hubba" desc="Funky dive bar energy" />
+      <VenueCard venue="lakeside" name="Lakeside Lounge" desc="Chill vibes, lake views" />
+      <VenueCard venue="hubba"    name="Hubba Hubba"     desc="Funky dive bar energy" />
     </InfoCard>
+
+    <DayMap
+      kicker="The Map"
+      title="East Nashville Crawl"
+      centerQuery="East Nashville, Nashville TN"
+      stops={["hawkers", "attaboy", "lakeside", "hubba"]}
+    />
   </div>
 );
 
@@ -644,19 +792,26 @@ const FridayPage = () => (
       <TimeBlock time="6:00 AM"  title="Burlyn Lands"               description="Early bird arrival." />
       <TimeBlock time="AM"       title="Jandee & Niraj Drive In"    description="Hitting Nashville Friday morning." />
       <TimeBlock time="Early"    title="Surprise Decor Setup"       description="Jess, Leslie, Jandee & Niraj decorate the Airbnb while Amanda is still asleep." highlight />
-      <TimeBlock time="10:00 AM" title="Brunch at Bacco"            description="Reservation for the group. Hand out BINGO cards to the ladies." />
-      <TimeBlock time="11:30 AM" title="Line Dance Lessons"         description="Category 10 — free. Class runs ~11:30 to 1:30. Warm up for tonight." />
-      <TimeBlock time="1:50 PM"  title="Arrive at Pedal Tavern"     description="$72 pp (gratuity included). Tour departs 2:20 PM — be there by 1:50." highlight />
-      <TimeBlock time="4:15 PM"  title="Early Dinner"               description="The Hampton Social Rooftop — reservation at 4:15." />
+      <TimeBlock time="10:00 AM" title="Brunch at Bacco"            description="Reservation for the group. Hand out BINGO cards to the ladies." venue="bacco" />
+      <TimeBlock time="11:30 AM" title="Line Dance Lessons"         description="Category 10 — free. Class runs ~11:30 to 1:30. Warm up for tonight." venue="cat10" />
+      <TimeBlock time="1:50 PM"  title="Arrive at Pedal Tavern"     description="$72 pp (gratuity included). Tour departs 2:20 PM — be there by 1:50." highlight venue="pedal" />
+      <TimeBlock time="4:15 PM"  title="Early Dinner"               description="The Hampton Social Rooftop — reservation at 4:15." venue="hampton" />
       <TimeBlock time="Evening"  title="Drop Car & Freshen Up"      description="Back to the Airbnb, change clothes, regroup for Broadway." />
       <TimeBlock time="Night"    title="Broadway Night Out"         description="The main event — honky-tonks all the way down Lower Broadway." />
     </div>
 
     <InfoCard kicker="The Main Event" title="Broadway Lineup">
-      <VenueCard name="Tootsies Orchid Lounge" desc="Classic honky-tonk, cold drinks" />
-      <VenueCard name="Category 10" desc="Line dancing — round two" />
-      <VenueCard name="Robert's Western World" desc="Recession Special late-night snack" highlight />
+      <VenueCard venue="tootsies" name="Tootsies Orchid Lounge"   desc="Classic honky-tonk, cold drinks" />
+      <VenueCard venue="cat10"    name="Category 10"              desc="Line dancing — round two" />
+      <VenueCard venue="roberts"  name="Robert's Western World"   desc="Recession Special late-night snack" highlight />
     </InfoCard>
+
+    <DayMap
+      kicker="The Map"
+      title="Downtown & Broadway"
+      centerQuery="Lower Broadway, Nashville TN"
+      stops={["bacco", "cat10", "pedal", "hampton", "tootsies", "roberts"]}
+    />
   </div>
 );
 
@@ -672,10 +827,11 @@ const SaturdayPage = () => (
         title="Hike & Waterfall Swim"
         description="Fall Creek Falls State Park. Bring swimsuits, towels, water, sunscreen, and hiking shoes."
         highlight
+        venue="fallCreek"
         link="https://tnstateparks.com/parks/fall-creek-falls"
         linkText="Park info"
       />
-      <TimeBlock time="Late PM"   title="Late Lunch"                description="Kyuramen — takeout option available if we're worn out." />
+      <TimeBlock time="Late PM"   title="Late Lunch"                description="Kyuramen — takeout option available if we're worn out." venue="kyuramen" />
       <TimeBlock time="Evening"   title="Steak Dinner at the Airbnb" description="Grill steaks & veggies. Home-cooked group dinner." />
       <TimeBlock time="Night"     title="Pool Party & Game Night"   description="Close out the night poolside — bring games." highlight />
     </div>
@@ -687,6 +843,13 @@ const SaturdayPage = () => (
         ))}
       </div>
     </InfoCard>
+
+    <DayMap
+      kicker="The Map"
+      title="Out to the Falls"
+      centerQuery="Fall Creek Falls State Park, Tennessee"
+      stops={["fallCreek", "kyuramen"]}
+    />
   </div>
 );
 
@@ -695,9 +858,9 @@ const SundayPage = () => (
     <PageHeader kicker="Day Four" title="Sunday" subtitle="May 31 · Adios, Nashville" />
 
     <div style={{ padding: "0 0 24px" }}>
-      <TimeBlock time="7:00 AM"  title="Burlyn Departs"            description="Early flight out." />
+      <TimeBlock time="7:00 AM"  title="Burlyn Departs"            description="Early flight out." venue="bna" />
       <TimeBlock time="11:00 AM" title="Check Out of Airbnb"       description="Pack up, tidy up, head out by 11." highlight />
-      <TimeBlock time="5:43 PM"  title="Vanessa Departs"           description="Last flight out." />
+      <TimeBlock time="5:43 PM"  title="Vanessa Departs"           description="Last flight out." venue="bna" />
       <TimeBlock time="Anytime"  title="Jandee & Niraj Drive Home" description="Hitting the road whenever." />
     </div>
 
@@ -707,6 +870,13 @@ const SundayPage = () => (
       <GuestRow name="Jandee & Niraj"  info="Driving home" />
       <GuestRow name="Amanda, Jess, Ella, Leslie" info="See your own" />
     </InfoCard>
+
+    <DayMap
+      kicker="The Map"
+      title="To The Airport"
+      centerQuery="Nashville International Airport BNA"
+      stops={["bna"]}
+    />
 
     <div style={{ textAlign: "center", padding: "60px 28px 20px" }}>
       <Hairline color={COLORS.sandLight} margin="0 auto 24px" width={50} />
@@ -902,6 +1072,13 @@ const DetailsPage = () => (
           Food, drinks, and Ubers not included.
         </p>
       </InfoCard>
+
+      <DayMap
+        kicker="The Whole Trip"
+        title="Nashville Overview"
+        centerQuery="Nashville, Tennessee"
+        stops={["bna", "hawkers", "tootsies", "fallCreek"]}
+      />
     </div>
   </div>
 );
